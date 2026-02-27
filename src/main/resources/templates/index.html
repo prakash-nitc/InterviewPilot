@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="InterviewPilot - AI-Powered Mock Interview Platform. Practice with AI, get real-time feedback, and ace your next interview.">
+    <title>InterviewPilot — AI Mock Interview Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="/" class="logo">
+                <span class="logo-icon">🎯</span>
+                <span class="logo-text">InterviewPilot</span>
+            </a>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How It Works</a>
+                <a href="#" class="btn btn-primary btn-sm">Start Interview</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container hero-container">
+            <div class="hero-badge">🚀 AI-Powered Interview Prep</div>
+            <h1 class="hero-title">
+                Ace Your Next Interview with
+                <span class="gradient-text">AI-Powered Practice</span>
+            </h1>
+            <p class="hero-subtitle">
+                Choose your role, topic, and difficulty. Get asked real interview questions 
+                by an AI interviewer, and receive instant scoring and detailed feedback.
+            </p>
+            <div class="hero-actions">
+                <a href="#" class="btn btn-primary btn-lg">
+                    Start a Mock Interview
+                    <span class="btn-arrow">→</span>
+                </a>
+                <a href="#how-it-works" class="btn btn-outline btn-lg">Learn More</a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number">5+</span>
+                    <span class="stat-label">Interview Roles</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">10+</span>
+                    <span class="stat-label">Topics</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">AI</span>
+                    <span class="stat-label">Real-time Feedback</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Why InterviewPilot?</h2>
+                <p class="section-subtitle">Everything you need to prepare for technical interviews</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI Interviewer</h3>
+                    <p>Powered by Google Gemini AI — generates role-specific questions that mirror real interviews.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Instant Scoring</h3>
+                    <p>Get scored on each answer with detailed strengths, improvements, and a model answer.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Role-Specific</h3>
+                    <p>Practice for SDE, Data Scientist, Backend, Frontend, and more — tailored to each role.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3>Track Progress</h3>
+                    <p>Review past interviews, see your improvement over time, and identify weak areas.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <h3>Chat Interface</h3>
+                    <p>Interview in a natural, conversational format — just like a real interview experience.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🏆</div>
+                    <h3>Detailed Reports</h3>
+                    <p>End-of-interview report with overall grade, per-question breakdown, and AI assessment.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">How It Works</h2>
+                <p class="section-subtitle">Three simple steps to better interview performance</p>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Choose Your Interview</h3>
+                    <p>Select your target role, topic (DSA, System Design, Java, etc.), and difficulty level.</p>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Answer Questions</h3>
+                    <p>The AI interviewer asks you relevant questions one by one in a natural chat format.</p>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Get Your Score</h3>
+                    <p>Receive instant AI-powered feedback with scores, strengths, and areas to improve.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <h2>Ready to Start Practicing?</h2>
+            <p>Your next interview could be your best one yet.</p>
+            <a href="#" class="btn btn-primary btn-lg">
+                Start a Mock Interview
+                <span class="btn-arrow">→</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-brand">
+                <span class="logo-icon">🎯</span>
+                <span class="logo-text">InterviewPilot</span>
+            </div>
+            <p class="footer-text">
+                Built with Spring Boot, Thymeleaf, HTMX &amp; Google Gemini AI
+            </p>
+            <div class="footer-links">
+                <a href="https://github.com/prakash" target="_blank">GitHub</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
