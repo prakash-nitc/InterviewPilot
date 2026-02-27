@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="InterviewPilot - AI-Powered Mock Interview Platform. Practice with AI, get real-time feedback, and ace your next interview.">
+    <meta name="description"
+        content="InterviewPilot - AI-Powered Mock Interview Platform. Practice with AI, get real-time feedback, and ace your next interview.">
     <title>InterviewPilot — AI Mock Interview Platform</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
+
 <body>
 
     <!-- Navigation -->
@@ -22,7 +26,8 @@
             <div class="nav-links">
                 <a href="#features">Features</a>
                 <a href="#how-it-works">How It Works</a>
-                <a href="#" class="btn btn-primary btn-sm">Start Interview</a>
+                <a th:href="@{/interviews}">My Sessions</a>
+                <a th:href="@{/interviews/new}" class="btn btn-primary btn-sm">Start Interview</a>
             </div>
         </div>
     </nav>
@@ -36,11 +41,11 @@
                 <span class="gradient-text">AI-Powered Practice</span>
             </h1>
             <p class="hero-subtitle">
-                Choose your role, topic, and difficulty. Get asked real interview questions 
+                Choose your role, topic, and difficulty. Get asked real interview questions
                 by an AI interviewer, and receive instant scoring and detailed feedback.
             </p>
             <div class="hero-actions">
-                <a href="#" class="btn btn-primary btn-lg">
+                <a th:href="@{/interviews/new}" class="btn btn-primary btn-lg">
                     Start a Mock Interview
                     <span class="btn-arrow">→</span>
                 </a>
@@ -163,4 +168,5 @@
     </footer>
 
 </body>
+
 </html>

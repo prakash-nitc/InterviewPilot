@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Sessions — InterviewPilot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="/" class="logo">
+                <span class="logo-icon">🎯</span>
+                <span class="logo-text">InterviewPilot</span>
+            </a>
+            <div class="nav-links">
+                <a th:href="@{/interviews}">My Sessions</a>
+                <a th:href="@{/interviews/new}" class="btn btn-primary btn-sm">Start Interview</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sessions List -->
+    <section class="page-content">
+        <div class="container">
+            <div class="page-header">
+                <div>
+                    <h1>My Interview Sessions</h1>
+                    <p class="page-subtitle">Review your practice sessions and track progress.</p>
+                </div>
+                <a th:href="@{/interviews/new}" class="btn btn-primary">
+                    + New Interview
+                </a>
+            </div>
+
+            <!-- Success Message -->
+            <div th:if="${successMessage}" class="alert alert-success">
+                <span th:text="${successMessage}">Success</span>
+            </div>
+
+            <!-- Empty State -->
+            <div th:if="${#lists.isEmpty(sessions)}" class="empty-state">
+                <div class="empty-icon">📋</div>
+                <h3>No sessions yet</h3>
+                <p>Start your first mock interview to begin practicing!</p>
+                <a th:href="@{/interviews/new}" class="btn btn-primary btn-lg">Start Interview →</a>
+            </div>
+
+            <!-- Sessions Grid -->
+            <div th:unless="${#lists.isEmpty(sessions)}" class="sessions-grid">
+                <a th:each="session : ${sessions}" th:href="@{/interviews/{id}(id=${session.id})}" class="session-card">
+                    <div class="session-card-header">
+                        <span class="session-role" th:text="${session.role.displayName}">SDE</span>
+                        <span class="status-badge"
+                            th:classappend="${session.status.name() == 'NOT_STARTED' ? 'status-pending' : (session.status.name() == 'IN_PROGRESS' ? 'status-active' : 'status-done')}"
+                            th:text="${session.status.displayName}">Status</span>
+                    </div>
+                    <div class="session-card-body">
+                        <div class="session-info">
+                            <span class="info-label">Topic</span>
+                            <span class="info-value" th:text="${session.topic.displayName}">DSA</span>
+                        </div>
+                        <div class="session-info">
+                            <span class="info-label">Difficulty</span>
+                            <span class="info-value" th:text="${session.difficulty.displayName}">Medium</span>
+                        </div>
+                        <div class="session-info" th:if="${session.status.name() == 'COMPLETED'}">
+                            <span class="info-label">Score</span>
+                            <span class="info-value" th:text="${session.totalScore + '/' + session.maxScore}">0/0</span>
+                        </div>
+                    </div>
+                    <div class="session-card-footer">
+                        <span class="session-date"
+                            th:text="${#temporals.format(session.createdAt, 'MMM dd, yyyy • hh:mm a')}">Date</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+</body>
+
+</html>

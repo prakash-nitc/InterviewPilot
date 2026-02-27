@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Start Interview — InterviewPilot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="/" class="logo">
+                <span class="logo-icon">🎯</span>
+                <span class="logo-text">InterviewPilot</span>
+            </a>
+            <div class="nav-links">
+                <a th:href="@{/interviews}">My Sessions</a>
+                <a th:href="@{/interviews/new}" class="btn btn-primary btn-sm">Start Interview</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Create Session Form -->
+    <section class="page-content">
+        <div class="container">
+            <div class="form-page">
+                <div class="form-header">
+                    <h1>Start a Mock Interview</h1>
+                    <p>Choose your role, topic, and difficulty to begin practicing.</p>
+                </div>
+
+                <form th:action="@{/interviews/new}" th:object="${sessionRequest}" method="post" class="session-form">
+
+                    <!-- Role Selection -->
+                    <div class="form-group">
+                        <label for="role">Target Role</label>
+                        <select th:field="*{role}" id="role" class="form-select" required>
+                            <option value="">— Select a Role —</option>
+                            <option th:each="r : ${roles}" th:value="${r}" th:text="${r.displayName}">Role</option>
+                        </select>
+                        <div th:if="${#fields.hasErrors('role')}" class="form-error">
+                            <span th:errors="*{role}">Error</span>
+                        </div>
+                    </div>
+
+                    <!-- Topic Selection -->
+                    <div class="form-group">
+                        <label for="topic">Interview Topic</label>
+                        <select th:field="*{topic}" id="topic" class="form-select" required>
+                            <option value="">— Select a Topic —</option>
+                            <option th:each="t : ${topics}" th:value="${t}" th:text="${t.displayName}">Topic</option>
+                        </select>
+                        <div th:if="${#fields.hasErrors('topic')}" class="form-error">
+                            <span th:errors="*{topic}">Error</span>
+                        </div>
+                    </div>
+
+                    <!-- Difficulty Selection -->
+                    <div class="form-group">
+                        <label for="difficulty">Difficulty Level</label>
+                        <div class="difficulty-options">
+                            <label th:each="d : ${difficulties}" class="difficulty-card">
+                                <input type="radio" th:field="*{difficulty}" th:value="${d}">
+                                <div class="difficulty-card-content">
+                                    <span class="difficulty-icon"
+                                        th:text="${d.name() == 'EASY' ? '🟢' : (d.name() == 'MEDIUM' ? '🟡' : '🔴')}">●</span>
+                                    <span class="difficulty-label" th:text="${d.displayName}">Easy</span>
+                                </div>
+                            </label>
+                        </div>
+                        <div th:if="${#fields.hasErrors('difficulty')}" class="form-error">
+                            <span th:errors="*{difficulty}">Error</span>
+                        </div>
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            Start Interview
+                            <span class="btn-arrow">→</span>
+                        </button>
+                        <a th:href="@{/interviews}" class="btn btn-outline btn-lg">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+</body>
+
+</html>
