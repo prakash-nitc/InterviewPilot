@@ -115,6 +115,24 @@ public class InterviewController {
     }
 
     /**
+     * Starts an interview session (generates AI questions).
+     *
+     * WHY @PostMapping?
+     * - Starting a session modifies state (changes status, adds questions).
+     * - GET requests should be idempotent (safe to refresh). POST is for actions.
+     */
+    @PostMapping("/{id}/start")
+    public String startSession(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            interviewService.startSession(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Interview started! Questions generated.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to start interview: " + e.getMessage());
+        }
+        return "redirect:/interviews/" + id;
+    }
+
+    /**
      * Deletes a session and redirects back to the session list.
      *
      * WHY @PostMapping (not @DeleteMapping)?

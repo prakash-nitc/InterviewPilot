@@ -36,6 +36,11 @@
                 <span th:text="${successMessage}">Success</span>
             </div>
 
+            <!-- Error Message -->
+            <div th:if="${errorMessage}" class="alert alert-danger">
+                <span th:text="${errorMessage}">Error</span>
+            </div>
+
             <div class="detail-page">
                 <!-- Back Link -->
                 <a th:href="@{/interviews}" class="back-link">← Back to Sessions</a>
@@ -116,10 +121,12 @@
 
                 <!-- Action Buttons -->
                 <div class="detail-actions">
-                    <a th:if="${session.status.name() == 'NOT_STARTED'}" th:href="@{/interviews/{id}(id=${session.id})}"
-                        class="btn btn-primary btn-lg">
-                        Begin Interview →
-                    </a>
+                    <form th:if="${session.status.name() == 'NOT_STARTED'}"
+                        th:action="@{/interviews/{id}/start(id=${session.id})}" method="post" class="inline-form">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            Begin Interview →
+                        </button>
+                    </form>
                     <form th:action="@{/interviews/{id}/delete(id=${session.id})}" method="post" class="inline-form">
                         <button type="submit" class="btn btn-danger"
                             onclick="return confirm('Are you sure you want to delete this session?')">
