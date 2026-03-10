@@ -33,3 +33,11 @@ spring:
 # Server
 server:
   port: 8080
+
+# Gemini AI Configuration
+gemini:
+  api:
+    key: ${GEMINI_API_KEY:your-api-key-here}
+    url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+  questions:
+    count: 5
