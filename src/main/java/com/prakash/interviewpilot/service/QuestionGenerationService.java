@@ -134,10 +134,15 @@ public class QuestionGenerationService {
                 continue;
             }
 
+            // Only accept lines that start with a number prefix (1. 2) 3- etc.)
+            if (!trimmed.matches("^\\d+[.)\\-]\\s*.*")) {
+                continue;
+            }
+
             // Remove numbering prefix: "1. ", "2) ", "1- " etc.
             String cleaned = trimmed.replaceFirst("^\\d+[.)\\-]\\s*", "");
 
-            // Skip if the line was only a number or is too short to be a question
+            // Skip if the remaining text is too short to be a question
             if (cleaned.length() < 10) {
                 continue;
             }

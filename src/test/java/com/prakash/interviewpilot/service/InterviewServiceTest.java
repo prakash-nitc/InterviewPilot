@@ -37,6 +37,9 @@ class InterviewServiceTest {
     @Mock
     private InterviewSessionRepository sessionRepository;
 
+    @Mock
+    private QuestionGenerationService questionGenerationService;
+
     @InjectMocks
     private InterviewService interviewService;
 
@@ -117,14 +120,22 @@ class InterviewServiceTest {
     }
 
     @Test
-    @DisplayName("Start session - should transition from NOT_STARTED to IN_PROGRESS")
+    @DisplayName("Start session - should generate questions and transition to IN_PROGRESS")
     void startSession_shouldTransitionToInProgress() {
         when(sessionRepository.findById(1L)).thenReturn(Optional.of(savedSession));
         when(sessionRepository.save(any(InterviewSession.class))).thenReturn(savedSession);
 
+        // Mock AI generating 3 questions
+        when(questionGenerationService.generateQuestions(
+                any(InterviewRole.class), any(InterviewTopic.class), any(Difficulty.class)))
+                .thenReturn(List.of("Question 1?", "Question 2?", "Question 3?"));
+
         InterviewSession result = interviewService.startSession(1L);
 
         assertEquals(SessionStatus.IN_PROGRESS, result.getStatus());
+        assertEquals(3, result.getQuestions().size());
+        verify(questionGenerationService, times(1)).generateQuestions(
+                any(InterviewRole.class), any(InterviewTopic.class), any(Difficulty.class));
     }
 
     @Test
