@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview — InterviewPilot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <!--
+        WHY HTMX via CDN?
+        - No npm, no build step, no webpack — just a single script tag.
+        - HTMX adds dynamic behavior through HTML attributes (hx-post, hx-target, etc.)
+        - The server returns HTML fragments, not JSON — perfect for Thymeleaf.
+    -->
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="/" class="logo">
+                <span class="logo-icon">🎯</span>
+                <span class="logo-text">InterviewPilot</span>
+            </a>
+            <div class="nav-links">
+                <a th:href="@{/interviews}">My Sessions</a>
+                <a th:href="@{/interviews/new}" class="btn btn-primary btn-sm">Start Interview</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Interview Chat -->
+    <section class="page-content">
+        <div class="container">
+            <div class="interview-page">
+
+                <!-- Interview Header -->
+                <div class="interview-header">
+                    <div>
+                        <h1>
+                            <span th:text="${session.role.displayName}">SDE</span> —
+                            <span th:text="${session.topic.displayName}">DSA</span>
+                        </h1>
+                        <p class="interview-meta">
+                            <span th:text="${session.difficulty.displayName}">Medium</span> •
+                            <span th:text="${session.questions.size() + ' questions'}">5 questions</span>
+                        </p>
+                    </div>
+                    <div class="interview-progress">
+                        <span class="progress-text">
+                            Question <span id="current-q" th:text="${currentQuestionIndex}">1</span>
+                            of <span th:text="${session.questions.size()}">5</span>
+                        </span>
+                        <div class="progress-bar">
+                            <div class="progress-fill"
+                                 th:style="'width: ' + ${(currentQuestionIndex - 1) * 100 / session.questions.size()} + '%'">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Area: Answered Questions History -->
+                <div class="chat-history" id="chat-history">
+                    <div th:each="q : ${answeredQuestions}" class="chat-exchange">
+                        <div class="chat-bubble chat-question">
+                            <span class="bubble-label">Q<span th:text="${q.orderIndex}">1</span></span>
+                            <p th:text="${q.questionText}">Question text</p>
+                        </div>
+                        <div class="chat-bubble chat-answer">
+                            <span class="bubble-label">Your Answer</span>
+                            <p th:text="${q.userAnswer}">Answer text</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Current Question Card (HTMX target) -->
+                <div id="question-area">
+                    <th:block th:if="${currentQuestion != null}">
+                        <div th:replace="~{fragments/question-card :: questionCard(session=${session}, question=${currentQuestion})}"></div>
+                    </th:block>
+
+                    <th:block th:if="${currentQuestion == null}">
+                        <div class="interview-complete-card">
+                            <div class="complete-icon">🎉</div>
+                            <h2>All Questions Answered!</h2>
+                            <p>You've answered all <span th:text="${session.questions.size()}">5</span> questions. Complete the interview to see your results.</p>
+                            <form th:action="@{/interviews/{id}/complete(id=${session.id})}" method="post">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    Complete Interview →
+                                </button>
+                            </form>
+                        </div>
+                    </th:block>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Auto-scroll chat history to bottom after each answer
+        document.addEventListener('htmx:afterSwap', function() {
+            var history = document.getElementById('chat-history');
+            if (history) {
+                history.scrollTop = history.scrollHeight;
+            }
+        });
+    </script>
+
+</body>
+</html>

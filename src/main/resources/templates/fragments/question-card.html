@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<!--
+    HTMX Fragment — rendered as a partial HTML snippet, NOT a full page.
+
+    WHY fragments?
+    - HTMX requests expect HTML fragments, not full pages.
+    - This file is a Thymeleaf fragment that returns ONLY the question card.
+    - When the user submits an answer, the server returns this fragment,
+      and HTMX swaps it into the #question-area div on the interview page.
+    - This enables "partial page update" — only the question changes, not the whole page.
+-->
+
+<!-- Question Card Fragment -->
+<div th:fragment="questionCard(session, question)" class="question-active-card">
+    <div class="active-question-header">
+        <span class="question-number-badge">Question <span th:text="${question.orderIndex}">1</span></span>
+    </div>
+    <p class="active-question-text" th:text="${question.questionText}">What is polymorphism?</p>
+
+    <!--
+        WHY hx-post instead of a normal form submit?
+        - hx-post sends the form via AJAX (no full page reload).
+        - hx-target="#question-area" tells HTMX to replace the question area with the response.
+        - hx-swap="innerHTML" replaces the contents of the target element.
+        - The server returns the NEXT question card fragment (or the completion card).
+    -->
+    <form th:hx-post="@{/interviews/{id}/answer(id=${session.id})}"
+          hx-target="#question-area"
+          hx-swap="innerHTML"
+          class="answer-form">
+        <input type="hidden" name="questionId" th:value="${question.id}">
+        <div class="form-group">
+            <label for="answer">Your Answer</label>
+            <textarea name="answer" id="answer" class="form-textarea"
+                      rows="5" placeholder="Type your answer here..."
+                      required></textarea>
+        </div>
+        <div class="answer-actions">
+            <button type="submit" class="btn btn-primary">
+                Submit Answer →
+            </button>
+            <span class="answer-hint">Press Submit to move to the next question</span>
+        </div>
+    </form>
+</div>
+
+<!-- All Done Fragment (returned when no more questions) -->
+<div th:fragment="allDone(session)" class="interview-complete-card">
+    <div class="complete-icon">🎉</div>
+    <h2>All Questions Answered!</h2>
+    <p>You've answered all <span th:text="${session.questions.size()}">5</span> questions. Complete the interview to see your results.</p>
+    <form th:action="@{/interviews/{id}/complete(id=${session.id})}" method="post">
+        <button type="submit" class="btn btn-primary btn-lg">
+            Complete Interview →
+        </button>
+    </form>
+</div>
+
+</html>
