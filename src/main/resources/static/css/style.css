@@ -998,4 +998,239 @@ img {
         align-items: flex-start;
         gap: var(--spacing-md);
     }
+
+    .interview-header {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+
+    .chat-history {
+        max-height: 300px;
+    }
+}
+
+/* ========================================
+   Interview Play Page — Chat UI (Phase 4)
+   ======================================== */
+
+.interview-page {
+    max-width: 850px;
+    margin: 0 auto;
+}
+
+.interview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-xl);
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.interview-header h1 {
+    font-size: 1.5rem;
+    margin-bottom: var(--spacing-xs);
+}
+
+.interview-meta {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.interview-progress {
+    text-align: right;
+    min-width: 200px;
+}
+
+.progress-text {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-xs);
+    display: block;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 99px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    border-radius: 99px;
+    transition: width 0.5s ease;
+}
+
+/* --- Chat History --- */
+.chat-history {
+    max-height: 450px;
+    overflow-y: auto;
+    margin-bottom: var(--spacing-lg);
+    padding-right: var(--spacing-sm);
+}
+
+.chat-history::-webkit-scrollbar {
+    width: 4px;
+}
+
+.chat-history::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+}
+
+.chat-exchange {
+    margin-bottom: var(--spacing-lg);
+}
+
+/* --- Chat Bubbles --- */
+.chat-bubble {
+    max-width: 85%;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--border-radius-lg);
+    margin-bottom: var(--spacing-sm);
+    position: relative;
+}
+
+.chat-question {
+    background: rgba(138, 43, 226, 0.12);
+    border: 1px solid rgba(138, 43, 226, 0.2);
+    margin-right: auto;
+    border-bottom-left-radius: 4px;
+}
+
+.chat-answer {
+    background: rgba(34, 197, 94, 0.08);
+    border: 1px solid rgba(34, 197, 94, 0.15);
+    margin-left: auto;
+    border-bottom-right-radius: 4px;
+}
+
+.bubble-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--spacing-xs);
+    display: block;
+}
+
+.chat-question .bubble-label {
+    color: var(--accent-color);
+}
+
+.chat-answer .bubble-label {
+    color: #4ade80;
+}
+
+.chat-bubble p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+/* --- Active Question Card --- */
+.question-active-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(138, 43, 226, 0.25);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-xl);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.active-question-header {
+    margin-bottom: var(--spacing-md);
+}
+
+.question-number-badge {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    color: white;
+    padding: 4px 14px;
+    border-radius: 99px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.active-question-text {
+    font-size: 1.15rem;
+    line-height: 1.7;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-lg);
+}
+
+/* --- Answer Form --- */
+.answer-form .form-textarea {
+    width: 100%;
+    min-height: 120px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius-md);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    padding: var(--spacing-md);
+    resize: vertical;
+    transition: border-color 0.2s ease;
+}
+
+.answer-form .form-textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+}
+
+.answer-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: var(--spacing-md);
+}
+
+.answer-hint {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* --- Interview Complete Card --- */
+.interview-complete-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-xxl);
+    text-align: center;
+    animation: slideUp 0.3s ease;
+}
+
+.complete-icon {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.interview-complete-card h2 {
+    margin-bottom: var(--spacing-sm);
+    color: #4ade80;
+}
+
+.interview-complete-card p {
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-lg);
+}
+
+/* --- Inline Form (for buttons that need POST) --- */
+.inline-form {
+    display: inline;
 }
