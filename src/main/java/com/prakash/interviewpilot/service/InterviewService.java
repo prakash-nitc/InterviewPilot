@@ -184,4 +184,60 @@ public class InterviewService {
     public long getSessionCount() {
         return sessionRepository.count();
     }
+
+    /**
+     * Returns the current (first unanswered) question for a session.
+     * Returns null if all questions have been answered.
+     *
+     * WHY stream + filter instead of a custom query?
+     * - Session already has questions loaded (within the same transaction).
+     * - Simple logic: find the first question where answered == false, ordered by orderIndex.
+     * - For 5-10 questions, in-memory filtering is perfectly fine.
+     */
+    @Transactional(readOnly = true)
+    public Question getCurrentQuestion(Long sessionId) {
+        InterviewSession session = getSession(sessionId);
+        return session.getQuestions().stream()
+                .filter(q -> !q.isAnswered())
+                .sorted((a, b) -> Integer.compare(a.getOrderIndex(), b.getOrderIndex()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    /**
+     * Returns all answered questions for a session (chat history).
+     */
+    @Transactional(readOnly = true)
+    public List<Question> getAnsweredQuestions(Long sessionId) {
+        InterviewSession session = getSession(sessionId);
+        return session.getQuestions().stream()
+                .filter(Question::isAnswered)
+                .sorted((a, b) -> Integer.compare(a.getOrderIndex(), b.getOrderIndex()))
+                .toList();
+    }
+
+    /**
+     * Submits an answer for a specific question.
+     * Marks the question as answered and stores the user's response.
+     *
+     * @return the answered Question entity
+     */
+    public Question submitAnswer(Long sessionId, Long questionId, String answer) {
+        InterviewSession session = getSession(sessionId);
+
+        Question question = session.getQuestions().stream()
+                .filter(q -> q.getId().equals(questionId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Question not found with id: " + questionId));
+
+        if (question.isAnswered()) {
+            throw new IllegalStateException("Question has already been answered");
+        }
+
+        question.setUserAnswer(answer);
+        question.setAnswered(true);
+
+        sessionRepository.save(session);
+        return question;
+    }
 }

@@ -1,10 +1,7 @@
 package com.prakash.interviewpilot.controller;
 
 import com.prakash.interviewpilot.dto.CreateSessionRequest;
-import com.prakash.interviewpilot.model.Difficulty;
-import com.prakash.interviewpilot.model.InterviewRole;
-import com.prakash.interviewpilot.model.InterviewSession;
-import com.prakash.interviewpilot.model.InterviewTopic;
+import com.prakash.interviewpilot.model.*;
 import com.prakash.interviewpilot.service.InterviewService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -12,6 +9,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 /**
  * Controller for interview session management.
@@ -36,14 +35,6 @@ public class InterviewController {
 
     /**
      * Shows the "Create Interview" form.
-     *
-     * WHY add enum values to the Model?
-     * - Thymeleaf needs the enum values to populate dropdown options.
-     * - Model is a key-value map that Thymeleaf can access in templates.
-     *
-     * WHY add an empty CreateSessionRequest?
-     * - Thymeleaf form binding (th:object) needs an object to bind to.
-     * - On form submission, Spring populates this object with form data.
      */
     @GetMapping("/new")
     public String showCreateForm(Model model) {
@@ -56,21 +47,7 @@ public class InterviewController {
 
     /**
      * Handles the "Create Interview" form submission.
-     *
-     * WHY @Valid + BindingResult?
-     * - @Valid triggers validation of @NotNull etc. on the DTO.
-     * - BindingResult captures validation errors.
-     * - If there are errors, we re-display the form with error messages.
-     * - BindingResult MUST come immediately after the @Valid parameter.
-     *
-     * WHY RedirectAttributes?
-     * - After successful creation, we redirect to the session detail page.
-     * - RedirectAttributes lets us pass a flash message ("Session created!")
-     * that survives the redirect.
-     *
-     * WHY "redirect:" instead of returning a view name?
-     * - POST-Redirect-GET pattern: prevents double form submission if user
-     * refreshes the browser after submitting.
+     * Uses POST-Redirect-GET pattern to prevent double submission.
      */
     @PostMapping("/new")
     public String createSession(
@@ -102,10 +79,6 @@ public class InterviewController {
 
     /**
      * Shows details of a specific interview session.
-     *
-     * WHY @PathVariable?
-     * - Extracts the {id} from the URL path (e.g., /interviews/5 → id = 5).
-     * - This is RESTful URL design — resources identified by their ID in the URL.
      */
     @GetMapping("/{id}")
     public String sessionDetail(@PathVariable Long id, Model model) {
@@ -115,30 +88,95 @@ public class InterviewController {
     }
 
     /**
-     * Starts an interview session (generates AI questions).
-     *
-     * WHY @PostMapping?
-     * - Starting a session modifies state (changes status, adds questions).
-     * - GET requests should be idempotent (safe to refresh). POST is for actions.
+     * Starts an interview session (generates AI questions) then redirects to play page.
      */
     @PostMapping("/{id}/start")
     public String startSession(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             interviewService.startSession(id);
-            redirectAttributes.addFlashAttribute("successMessage", "Interview started! Questions generated.");
+            return "redirect:/interviews/" + id + "/play";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to start interview: " + e.getMessage());
+            return "redirect:/interviews/" + id;
+        }
+    }
+
+    /**
+     * Renders the interview play page (chat-style interface).
+     *
+     * WHY a separate /play route instead of reusing /session-detail?
+     * - Different UI: session-detail is an overview, /play is the interactive chat.
+     * - Separation of concerns: different templates for different user intents.
+     */
+    @GetMapping("/{id}/play")
+    public String playInterview(@PathVariable Long id, Model model) {
+        InterviewSession session = interviewService.getSession(id);
+
+        if (session.getStatus() != SessionStatus.IN_PROGRESS) {
+            return "redirect:/interviews/" + id;
+        }
+
+        Question currentQuestion = interviewService.getCurrentQuestion(id);
+        List<Question> answeredQuestions = interviewService.getAnsweredQuestions(id);
+
+        int currentIndex = answeredQuestions.size() + 1;
+
+        model.addAttribute("session", session);
+        model.addAttribute("currentQuestion", currentQuestion);
+        model.addAttribute("answeredQuestions", answeredQuestions);
+        model.addAttribute("currentQuestionIndex", currentIndex);
+
+        return "interview";
+    }
+
+    /**
+     * Handles answer submission via HTMX.
+     *
+     * WHY return a fragment instead of a full page?
+     * - HTMX expects an HTML fragment to swap into #question-area.
+     * - This is the key to "no full page reload" — only the question card updates.
+     * - We return either the next question card or the "all done" card.
+     */
+    @PostMapping("/{id}/answer")
+    public String submitAnswer(
+            @PathVariable Long id,
+            @RequestParam Long questionId,
+            @RequestParam String answer,
+            Model model) {
+
+        // Save the answer
+        interviewService.submitAnswer(id, questionId, answer);
+
+        // Get the next question (or null if all done)
+        InterviewSession session = interviewService.getSession(id);
+        Question nextQuestion = interviewService.getCurrentQuestion(id);
+
+        model.addAttribute("session", session);
+
+        if (nextQuestion != null) {
+            model.addAttribute("question", nextQuestion);
+            return "fragments/question-card :: questionCard(session=${session}, question=${question})";
+        } else {
+            return "fragments/question-card :: allDone(session=${session})";
+        }
+    }
+
+    /**
+     * Completes an interview session — calculates scores and redirects to detail page.
+     */
+    @PostMapping("/{id}/complete")
+    public String completeSession(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            interviewService.completeSession(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Interview completed! Review your results below.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to complete interview: " + e.getMessage());
         }
         return "redirect:/interviews/" + id;
     }
 
     /**
      * Deletes a session and redirects back to the session list.
-     *
-     * WHY @PostMapping (not @DeleteMapping)?
-     * - HTML forms only support GET and POST methods.
-     * - We use POST for delete actions in a Thymeleaf app.
-     * - In a REST API, we'd use @DeleteMapping.
      */
     @PostMapping("/{id}/delete")
     public String deleteSession(@PathVariable Long id, RedirectAttributes redirectAttributes) {
