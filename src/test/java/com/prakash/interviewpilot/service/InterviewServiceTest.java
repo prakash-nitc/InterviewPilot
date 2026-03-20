@@ -208,4 +208,77 @@ class InterviewServiceTest {
                 RuntimeException.class,
                 () -> interviewService.deleteSession(999L));
     }
+
+    @Test
+    @DisplayName("Get current question - should return first unanswered question")
+    void getCurrentQuestion_shouldReturnFirstUnanswered() {
+        Question q1 = new Question("Q1", 1);
+        q1.setId(10L);
+        q1.setAnswered(true);
+
+        Question q2 = new Question("Q2", 2);
+        q2.setId(11L);
+        q2.setAnswered(false);
+
+        Question q3 = new Question("Q3", 3);
+        q3.setId(12L);
+        q3.setAnswered(false);
+
+        savedSession.addQuestion(q1);
+        savedSession.addQuestion(q2);
+        savedSession.addQuestion(q3);
+
+        when(sessionRepository.findById(1L)).thenReturn(Optional.of(savedSession));
+
+        Question result = interviewService.getCurrentQuestion(1L);
+
+        assertNotNull(result);
+        assertEquals("Q2", result.getQuestionText());
+    }
+
+    @Test
+    @DisplayName("Get current question - should return null when all answered")
+    void getCurrentQuestion_shouldReturnNullWhenAllAnswered() {
+        Question q1 = new Question("Q1", 1);
+        q1.setAnswered(true);
+        savedSession.addQuestion(q1);
+
+        when(sessionRepository.findById(1L)).thenReturn(Optional.of(savedSession));
+
+        Question result = interviewService.getCurrentQuestion(1L);
+
+        assertNull(result);
+    }
+
+    @Test
+    @DisplayName("Submit answer - should mark question as answered")
+    void submitAnswer_shouldMarkQuestionAsAnswered() {
+        Question q1 = new Question("Q1", 1);
+        q1.setId(10L);
+        q1.setAnswered(false);
+        savedSession.addQuestion(q1);
+
+        when(sessionRepository.findById(1L)).thenReturn(Optional.of(savedSession));
+        when(sessionRepository.save(any(InterviewSession.class))).thenReturn(savedSession);
+
+        Question result = interviewService.submitAnswer(1L, 10L, "My answer here");
+
+        assertTrue(result.isAnswered());
+        assertEquals("My answer here", result.getUserAnswer());
+    }
+
+    @Test
+    @DisplayName("Submit answer - should throw if question already answered")
+    void submitAnswer_shouldThrowIfAlreadyAnswered() {
+        Question q1 = new Question("Q1", 1);
+        q1.setId(10L);
+        q1.setAnswered(true);
+        savedSession.addQuestion(q1);
+
+        when(sessionRepository.findById(1L)).thenReturn(Optional.of(savedSession));
+
+        assertThrows(
+                IllegalStateException.class,
+                () -> interviewService.submitAnswer(1L, 10L, "Another answer"));
+    }
 }
