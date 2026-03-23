@@ -3,74 +3,76 @@ package com.prakash.interviewpilot.dto;
 import java.util.List;
 
 /**
- * Represents the request body sent to the Gemini API.
+ * Represents the request body sent to the Groq API (OpenAI-compatible format).
  *
- * Gemini expects this JSON format:
+ * Groq expects this JSON format:
  * {
- * "contents": [
- * { "parts": [ { "text": "your prompt here" } ] }
- * ]
+ *   "model": "llama-3.3-70b-versatile",
+ *   "messages": [
+ *     { "role": "user", "content": "your prompt here" }
+ *   ]
  * }
  *
- * WHY nested classes?
- * - Matches the exact JSON structure the API expects.
- * - Jackson (Spring's JSON library) serializes these objects directly to JSON.
- * - No manual JSON string building needed.
+ * WHY OpenAI-compatible format?
+ * - Groq implements the OpenAI chat completions API standard.
+ * - This means we can easily switch between Groq, OpenAI, or any
+ *   OpenAI-compatible provider by just changing the URL and key.
  */
 public class GeminiRequest {
 
-    private List<Content> contents;
+    private String model;
+    private List<Message> messages;
 
     public GeminiRequest() {
     }
 
-    public GeminiRequest(String prompt) {
-        this.contents = List.of(new Content(List.of(new Part(prompt))));
+    public GeminiRequest(String prompt, String model) {
+        this.model = model;
+        this.messages = List.of(new Message("user", prompt));
     }
 
-    public List<Content> getContents() {
-        return contents;
+    public String getModel() {
+        return model;
     }
 
-    public void setContents(List<Content> contents) {
-        this.contents = contents;
+    public void setModel(String model) {
+        this.model = model;
     }
 
-    public static class Content {
-        private List<Part> parts;
-
-        public Content() {
-        }
-
-        public Content(List<Part> parts) {
-            this.parts = parts;
-        }
-
-        public List<Part> getParts() {
-            return parts;
-        }
-
-        public void setParts(List<Part> parts) {
-            this.parts = parts;
-        }
+    public List<Message> getMessages() {
+        return messages;
     }
 
-    public static class Part {
-        private String text;
+    public void setMessages(List<Message> messages) {
+        this.messages = messages;
+    }
 
-        public Part() {
+    public static class Message {
+        private String role;
+        private String content;
+
+        public Message() {
         }
 
-        public Part(String text) {
-            this.text = text;
+        public Message(String role, String content) {
+            this.role = role;
+            this.content = content;
         }
 
-        public String getText() {
-            return text;
+        public String getRole() {
+            return role;
         }
 
-        public void setText(String text) {
-            this.text = text;
+        public void setRole(String role) {
+            this.role = role;
+        }
+
+        public String getContent() {
+            return content;
+        }
+
+        public void setContent(String content) {
+            this.content = content;
         }
     }
 }

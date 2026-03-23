@@ -41,22 +41,22 @@
                 <div class="interview-header">
                     <div>
                         <h1>
-                            <span th:text="${session.role.displayName}">SDE</span> —
-                            <span th:text="${session.topic.displayName}">DSA</span>
+                            <span th:text="${interviewSession.role.displayName}">SDE</span> —
+                            <span th:text="${interviewSession.topic.displayName}">DSA</span>
                         </h1>
                         <p class="interview-meta">
-                            <span th:text="${session.difficulty.displayName}">Medium</span> •
-                            <span th:text="${session.questions.size() + ' questions'}">5 questions</span>
+                            <span th:text="${interviewSession.difficulty.displayName}">Medium</span> •
+                            <span th:text="${interviewSession.questions.size() + ' questions'}">5 questions</span>
                         </p>
                     </div>
                     <div class="interview-progress">
                         <span class="progress-text">
                             Question <span id="current-q" th:text="${currentQuestionIndex}">1</span>
-                            of <span th:text="${session.questions.size()}">5</span>
+                            of <span th:text="${interviewSession.questions.size()}">5</span>
                         </span>
                         <div class="progress-bar">
                             <div class="progress-fill"
-                                 th:style="'width: ' + ${(currentQuestionIndex - 1) * 100 / session.questions.size()} + '%'">
+                                 th:style="'width: ' + ${(currentQuestionIndex - 1) * 100 / interviewSession.questions.size()} + '%'">
                             </div>
                         </div>
                     </div>
@@ -79,15 +79,15 @@
                 <!-- Current Question Card (HTMX target) -->
                 <div id="question-area">
                     <th:block th:if="${currentQuestion != null}">
-                        <div th:replace="~{fragments/question-card :: questionCard(session=${session}, question=${currentQuestion})}"></div>
+                        <div th:replace="~{fragments/question-card :: questionCard}"></div>
                     </th:block>
 
                     <th:block th:if="${currentQuestion == null}">
                         <div class="interview-complete-card">
                             <div class="complete-icon">🎉</div>
                             <h2>All Questions Answered!</h2>
-                            <p>You've answered all <span th:text="${session.questions.size()}">5</span> questions. Complete the interview to see your results.</p>
-                            <form th:action="@{/interviews/{id}/complete(id=${session.id})}" method="post">
+                            <p>You've answered all <span th:text="${interviewSession.questions.size()}">5</span> questions. Complete the interview to see your results.</p>
+                            <form th:action="@{/interviews/{id}/complete(id=${interviewSession.id})}" method="post">
                                 <button type="submit" class="btn btn-primary btn-lg">
                                     Complete Interview →
                                 </button>

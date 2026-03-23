@@ -3,38 +3,38 @@ package com.prakash.interviewpilot.dto;
 import java.util.List;
 
 /**
- * Represents the response body from the Gemini API.
+ * Represents the response body from the Groq API (OpenAI-compatible format).
  *
- * Gemini returns this JSON structure:
+ * Groq returns this JSON structure:
  * {
- * "candidates": [
- * {
- * "content": {
- * "parts": [ { "text": "generated text here" } ]
- * }
- * }
- * ]
+ *   "choices": [
+ *     {
+ *       "message": {
+ *         "role": "assistant",
+ *         "content": "generated text here"
+ *       }
+ *     }
+ *   ]
  * }
  *
  * WHY do we only model the fields we need?
  * - Jackson ignores unknown JSON properties by default.
- * - The real API response has many more fields (safetyRatings, usageMetadata,
- * etc.)
- * but we only care about the generated text.
+ * - The real API response has many more fields (usage, id, model, etc.)
+ *   but we only care about the generated text.
  */
 public class GeminiResponse {
 
-    private List<Candidate> candidates;
+    private List<Choice> choices;
 
     public GeminiResponse() {
     }
 
-    public List<Candidate> getCandidates() {
-        return candidates;
+    public List<Choice> getChoices() {
+        return choices;
     }
 
-    public void setCandidates(List<Candidate> candidates) {
-        this.candidates = candidates;
+    public void setChoices(List<Choice> choices) {
+        this.choices = choices;
     }
 
     /**
@@ -42,50 +42,45 @@ public class GeminiResponse {
      * Returns null if the response structure is unexpected.
      */
     public String getGeneratedText() {
-        if (candidates != null && !candidates.isEmpty()) {
-            Candidate candidate = candidates.get(0);
-            if (candidate.getContent() != null
-                    && candidate.getContent().getParts() != null
-                    && !candidate.getContent().getParts().isEmpty()) {
-                return candidate.getContent().getParts().get(0).getText();
+        if (choices != null && !choices.isEmpty()) {
+            Choice choice = choices.get(0);
+            if (choice.getMessage() != null) {
+                return choice.getMessage().getContent();
             }
         }
         return null;
     }
 
-    public static class Candidate {
-        private Content content;
+    public static class Choice {
+        private Message message;
 
-        public Content getContent() {
+        public Message getMessage() {
+            return message;
+        }
+
+        public void setMessage(Message message) {
+            this.message = message;
+        }
+    }
+
+    public static class Message {
+        private String role;
+        private String content;
+
+        public String getRole() {
+            return role;
+        }
+
+        public void setRole(String role) {
+            this.role = role;
+        }
+
+        public String getContent() {
             return content;
         }
 
-        public void setContent(Content content) {
+        public void setContent(String content) {
             this.content = content;
-        }
-    }
-
-    public static class Content {
-        private List<Part> parts;
-
-        public List<Part> getParts() {
-            return parts;
-        }
-
-        public void setParts(List<Part> parts) {
-            this.parts = parts;
-        }
-    }
-
-    public static class Part {
-        private String text;
-
-        public String getText() {
-            return text;
-        }
-
-        public void setText(String text) {
-            this.text = text;
         }
     }
 }

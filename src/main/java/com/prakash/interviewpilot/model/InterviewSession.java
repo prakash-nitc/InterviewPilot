@@ -72,7 +72,7 @@ public class InterviewSession {
      * WHY orphanRemoval = true?
      * - If a question is removed from the list, it's deleted from the database.
      */
-    @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @OrderBy("orderIndex ASC")
     private List<Question> questions = new ArrayList<>();
 

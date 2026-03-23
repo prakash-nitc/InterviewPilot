@@ -33,11 +33,15 @@ spring:
 # Server
 server:
   port: 8080
+  error:
+    include-stacktrace: always
+    include-message: always
 
-# Gemini AI Configuration
+# AI Configuration (Groq — OpenAI-compatible)
 gemini:
   api:
-    key: ${GEMINI_API_KEY:your-api-key-here}
-    url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+    key: ${GROQ_API_KEY:your-api-key-here}
+    url: https://api.groq.com/openai/v1/chat/completions
+    model: llama-3.3-70b-versatile
   questions:
     count: 5

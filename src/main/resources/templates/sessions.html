@@ -56,30 +56,30 @@
 
             <!-- Sessions Grid -->
             <div th:unless="${#lists.isEmpty(sessions)}" class="sessions-grid">
-                <a th:each="session : ${sessions}" th:href="@{/interviews/{id}(id=${session.id})}" class="session-card">
+                <a th:each="s : ${sessions}" th:href="@{/interviews/{id}(id=${s.id})}" class="session-card">
                     <div class="session-card-header">
-                        <span class="session-role" th:text="${session.role.displayName}">SDE</span>
+                        <span class="session-role" th:text="${s.role.displayName}">SDE</span>
                         <span class="status-badge"
-                            th:classappend="${session.status.name() == 'NOT_STARTED' ? 'status-pending' : (session.status.name() == 'IN_PROGRESS' ? 'status-active' : 'status-done')}"
-                            th:text="${session.status.displayName}">Status</span>
+                            th:classappend="${s.status.name() == 'NOT_STARTED' ? 'status-pending' : (s.status.name() == 'IN_PROGRESS' ? 'status-active' : 'status-done')}"
+                            th:text="${s.status.displayName}">Status</span>
                     </div>
                     <div class="session-card-body">
                         <div class="session-info">
                             <span class="info-label">Topic</span>
-                            <span class="info-value" th:text="${session.topic.displayName}">DSA</span>
+                            <span class="info-value" th:text="${s.topic.displayName}">DSA</span>
                         </div>
                         <div class="session-info">
                             <span class="info-label">Difficulty</span>
-                            <span class="info-value" th:text="${session.difficulty.displayName}">Medium</span>
+                            <span class="info-value" th:text="${s.difficulty.displayName}">Medium</span>
                         </div>
-                        <div class="session-info" th:if="${session.status.name() == 'COMPLETED'}">
+                        <div class="session-info" th:if="${s.status.name() == 'COMPLETED'}">
                             <span class="info-label">Score</span>
-                            <span class="info-value" th:text="${session.totalScore + '/' + session.maxScore}">0/0</span>
+                            <span class="info-value" th:text="${s.totalScore + '/' + s.maxScore}">0/0</span>
                         </div>
                     </div>
                     <div class="session-card-footer">
                         <span class="session-date"
-                            th:text="${#temporals.format(session.createdAt, 'MMM dd, yyyy • hh:mm a')}">Date</span>
+                            th:text="${#temporals.format(s.createdAt, 'MMM dd, yyyy • hh:mm a')}">Date</span>
                     </div>
                 </a>
             </div>

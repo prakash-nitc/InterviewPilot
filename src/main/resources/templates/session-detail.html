@@ -49,29 +49,29 @@
                 <div class="detail-header">
                     <div class="detail-title-row">
                         <h1>
-                            <span th:text="${session.role.displayName}">SDE</span>
+                            <span th:text="${interviewSession.role.displayName}">SDE</span>
                             <span class="text-muted">—</span>
-                            <span th:text="${session.topic.displayName}">DSA</span>
+                            <span th:text="${interviewSession.topic.displayName}">DSA</span>
                         </h1>
                         <span class="status-badge"
-                            th:classappend="${session.status.name() == 'NOT_STARTED' ? 'status-pending' : (session.status.name() == 'IN_PROGRESS' ? 'status-active' : 'status-done')}"
-                            th:text="${session.status.displayName}">Status</span>
+                            th:classappend="${interviewSession.status.name() == 'NOT_STARTED' ? 'status-pending' : (session.status.name() == 'IN_PROGRESS' ? 'status-active' : 'status-done')}"
+                            th:text="${interviewSession.status.displayName}">Status</span>
                     </div>
 
                     <!-- Session Meta -->
                     <div class="detail-meta">
                         <div class="meta-item">
                             <span class="meta-label">Difficulty</span>
-                            <span class="meta-value" th:text="${session.difficulty.displayName}">Medium</span>
+                            <span class="meta-value" th:text="${interviewSession.difficulty.displayName}">Medium</span>
                         </div>
                         <div class="meta-item">
                             <span class="meta-label">Questions</span>
-                            <span class="meta-value" th:text="${session.questions.size()}">0</span>
+                            <span class="meta-value" th:text="${interviewSession.questions.size()}">0</span>
                         </div>
-                        <div class="meta-item" th:if="${session.status.name() == 'COMPLETED'}">
+                        <div class="meta-item" th:if="${interviewSession.status.name() == 'COMPLETED'}">
                             <span class="meta-label">Score</span>
                             <span class="meta-value"
-                                th:text="${session.totalScore + ' / ' + session.maxScore}">0/0</span>
+                                th:text="${interviewSession.totalScore + ' / ' + session.maxScore}">0/0</span>
                         </div>
                         <div class="meta-item">
                             <span class="meta-label">Created</span>
@@ -82,10 +82,10 @@
                 </div>
 
                 <!-- Questions Section -->
-                <div th:if="${!session.questions.isEmpty()}" class="questions-section">
+                <div th:if="${!interviewSession.questions.isEmpty()}" class="questions-section">
                     <h2>Questions</h2>
                     <div class="questions-list">
-                        <div th:each="question : ${session.questions}" class="question-card">
+                        <div th:each="question : ${interviewSession.questions}" class="question-card">
                             <div class="question-header">
                                 <span class="question-number" th:text="'Q' + ${question.orderIndex}">Q1</span>
                                 <span th:if="${question.answered}" class="answered-badge">✓ Answered</span>
@@ -113,7 +113,7 @@
                 </div>
 
                 <!-- Empty Questions State -->
-                <div th:if="${session.questions.isEmpty()}" class="empty-state">
+                <div th:if="${interviewSession.questions.isEmpty()}" class="empty-state">
                     <div class="empty-icon">💬</div>
                     <h3>No questions yet</h3>
                     <p>Questions will appear here once the AI generates them.</p>
@@ -121,13 +121,13 @@
 
                 <!-- Action Buttons -->
                 <div class="detail-actions">
-                    <form th:if="${session.status.name() == 'NOT_STARTED'}"
-                        th:action="@{/interviews/{id}/start(id=${session.id})}" method="post" class="inline-form">
+                    <form th:if="${interviewSession.status.name() == 'NOT_STARTED'}"
+                        th:action="@{/interviews/{id}/start(id=${interviewSession.id})}" method="post" class="inline-form">
                         <button type="submit" class="btn btn-primary btn-lg">
                             Begin Interview →
                         </button>
                     </form>
-                    <form th:action="@{/interviews/{id}/delete(id=${session.id})}" method="post" class="inline-form">
+                    <form th:action="@{/interviews/{id}/delete(id=${interviewSession.id})}" method="post" class="inline-form">
                         <button type="submit" class="btn btn-danger"
                             onclick="return confirm('Are you sure you want to delete this session?')">
                             Delete Session

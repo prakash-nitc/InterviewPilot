@@ -83,7 +83,7 @@ public class InterviewController {
     @GetMapping("/{id}")
     public String sessionDetail(@PathVariable Long id, Model model) {
         InterviewSession session = interviewService.getSession(id);
-        model.addAttribute("session", session);
+        model.addAttribute("interviewSession", session);
         return "session-detail";
     }
 
@@ -121,8 +121,9 @@ public class InterviewController {
 
         int currentIndex = answeredQuestions.size() + 1;
 
-        model.addAttribute("session", session);
+        model.addAttribute("interviewSession", session);
         model.addAttribute("currentQuestion", currentQuestion);
+        model.addAttribute("question", currentQuestion);  // Fragment uses ${question}
         model.addAttribute("answeredQuestions", answeredQuestions);
         model.addAttribute("currentQuestionIndex", currentIndex);
 
@@ -151,13 +152,13 @@ public class InterviewController {
         InterviewSession session = interviewService.getSession(id);
         Question nextQuestion = interviewService.getCurrentQuestion(id);
 
-        model.addAttribute("session", session);
+        model.addAttribute("interviewSession", session);
 
         if (nextQuestion != null) {
             model.addAttribute("question", nextQuestion);
-            return "fragments/question-card :: questionCard(session=${session}, question=${question})";
+            return "fragments/question-card :: questionCard";
         } else {
-            return "fragments/question-card :: allDone(session=${session})";
+            return "fragments/question-card :: allDone";
         }
     }
 

@@ -10,10 +10,15 @@
     - When the user submits an answer, the server returns this fragment,
       and HTMX swaps it into the #question-area div on the interview page.
     - This enables "partial page update" — only the question changes, not the whole page.
+
+    WHY no fragment parameters?
+    - When returned from a controller, fragments access model attributes directly.
+    - Parameters (th:fragment="name(param)") work for th:replace includes,
+      but for controller-returned views, use model attributes with ${}.
 -->
 
 <!-- Question Card Fragment -->
-<div th:fragment="questionCard(session, question)" class="question-active-card">
+<div th:fragment="questionCard" class="question-active-card">
     <div class="active-question-header">
         <span class="question-number-badge">Question <span th:text="${question.orderIndex}">1</span></span>
     </div>
@@ -26,7 +31,7 @@
         - hx-swap="innerHTML" replaces the contents of the target element.
         - The server returns the NEXT question card fragment (or the completion card).
     -->
-    <form th:hx-post="@{/interviews/{id}/answer(id=${session.id})}"
+    <form th:hx-post="@{/interviews/{id}/answer(id=${interviewSession.id})}"
           hx-target="#question-area"
           hx-swap="innerHTML"
           class="answer-form">
@@ -47,11 +52,11 @@
 </div>
 
 <!-- All Done Fragment (returned when no more questions) -->
-<div th:fragment="allDone(session)" class="interview-complete-card">
+<div th:fragment="allDone" class="interview-complete-card">
     <div class="complete-icon">🎉</div>
     <h2>All Questions Answered!</h2>
-    <p>You've answered all <span th:text="${session.questions.size()}">5</span> questions. Complete the interview to see your results.</p>
-    <form th:action="@{/interviews/{id}/complete(id=${session.id})}" method="post">
+    <p>You've answered all <span th:text="${interviewSession.questions.size()}">5</span> questions. Complete the interview to see your results.</p>
+    <form th:action="@{/interviews/{id}/complete(id=${interviewSession.id})}" method="post">
         <button type="submit" class="btn btn-primary btn-lg">
             Complete Interview →
         </button>

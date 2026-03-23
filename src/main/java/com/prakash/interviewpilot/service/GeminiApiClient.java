@@ -13,29 +13,18 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
 /**
- * Low-level HTTP client for communicating with Google's Gemini API.
+ * Low-level HTTP client for communicating with the AI API (Groq / OpenAI-compatible).
  *
- * This class ONLY handles:
- * - Building the HTTP request
- * - Sending it to Gemini
- * - Returning the raw response
- *
- * It does NOT handle:
- * - Prompt engineering (that's QuestionGenerationService's job)
- * - Parsing questions from the text (also QuestionGenerationService)
- *
- * WHY separate this from QuestionGenerationService?
- * - Single Responsibility: one class for HTTP, one for prompt logic.
- * - Testability: we can mock this class easily in tests.
- * - Reusability: if we later need Gemini for answer evaluation (Phase 5),
- * we reuse this same client.
+ * WHY Groq instead of Gemini?
+ * - Groq offers a generous free tier with fast inference.
+ * - Uses the OpenAI-compatible API format, making it easy to switch providers.
+ * - Bearer token authentication (industry standard).
  *
  * WHY @Retryable?
  * - External APIs can fail for temporary reasons (rate limit, network blip).
  * - @Retryable automatically retries the method up to maxAttempts times.
  * - backoff = @Backoff(delay = 1000, multiplier = 2):
- * 1st retry after 1s, 2nd after 2s, 3rd after 4s (exponential backoff).
- * - This avoids hammering the API and gives it time to recover.
+ *   1st retry after 1s, 2nd after 2s, 3rd after 4s (exponential backoff).
  */
 @Service
 public class GeminiApiClient {
@@ -51,7 +40,7 @@ public class GeminiApiClient {
     }
 
     /**
-     * Sends a prompt to the Gemini API and returns the generated text.
+     * Sends a prompt to the AI API and returns the generated text.
      *
      * @param prompt The text prompt to send
      * @return The AI-generated text response
@@ -59,24 +48,27 @@ public class GeminiApiClient {
      */
     @Retryable(retryFor = RestClientException.class, maxAttempts = 3, backoff = @Backoff(delay = 1000, multiplier = 2))
     public String generateContent(String prompt) {
-        log.info("Calling Gemini API...");
+        log.info("Calling AI API (Groq)...");
 
-        String url = geminiProperties.getApi().getUrl() + "?key=" + geminiProperties.getApi().getKey();
+        String url = geminiProperties.getApi().getUrl();
+        String apiKey = geminiProperties.getApi().getKey();
+        String model = geminiProperties.getApi().getModel();
 
-        GeminiRequest request = new GeminiRequest(prompt);
+        GeminiRequest request = new GeminiRequest(prompt, model);
 
         GeminiResponse response = restClient.post()
                 .uri(url)
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + apiKey)
                 .body(request)
                 .retrieve()
                 .body(GeminiResponse.class);
 
         if (response == null || response.getGeneratedText() == null) {
-            throw new RestClientException("Gemini API returned an empty response");
+            throw new RestClientException("AI API returned an empty response");
         }
 
-        log.info("Gemini API response received successfully");
+        log.info("AI API response received successfully");
         return response.getGeneratedText();
     }
 }
