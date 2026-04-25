@@ -16,7 +16,7 @@ InterviewPilot is a full-stack web application that simulates real technical int
 | Layer | Technology |
 |---|---|
 | **Backend** | Java 17, Spring Boot 3.5 |
-| **AI Engine** | Google Gemini API |
+| **AI Engine** | Groq API (LLaMA 3.3 70B) |
 | **Database** | H2 (dev) / PostgreSQL (prod) |
 | **Frontend** | Thymeleaf + HTMX |
 | **Build** | Maven |
@@ -40,7 +40,7 @@ InterviewPilot is a full-stack web application that simulates real technical int
                └────┬────┘  └─┬──────────┘
                     │          │
                ┌────▼──────────▼───┐
-               │  Google Gemini API │
+               │   Groq AI API     │
                └───────────────────┘
                     │
                ┌────▼────────────┐
@@ -78,6 +78,10 @@ src/main/java/com/prakash/interviewpilot/
 # Clone the repo
 git clone https://github.com/<your-username>/InterviewPilot.git
 cd InterviewPilot
+
+# Set your Groq API key (get one free at https://console.groq.com)
+export GROQ_API_KEY="your-groq-key-here"         # Linux/Mac
+$env:GROQ_API_KEY="your-groq-key-here"            # Windows PowerShell
 
 # Run the app (no Maven install needed — uses Maven Wrapper)
 ./mvnw spring-boot:run      # Linux/Mac
