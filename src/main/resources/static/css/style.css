@@ -1234,3 +1234,102 @@ img {
 .inline-form {
     display: inline;
 }
+
+/* --- AI Evaluation Styles (Phase 5) --- */
+
+.chat-evaluation {
+    background: rgba(99, 102, 241, 0.08) !important;
+    border-left: 3px solid var(--primary);
+    margin-left: 2rem;
+}
+
+.eval-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.eval-score {
+    font-size: 1.1rem;
+    font-weight: 700;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+}
+
+.eval-score.score-good {
+    background: rgba(74, 222, 128, 0.15);
+    color: #4ade80;
+}
+
+.eval-score.score-avg {
+    background: rgba(250, 204, 21, 0.15);
+    color: #facc15;
+}
+
+.eval-score.score-low {
+    background: rgba(248, 113, 113, 0.15);
+    color: #f87171;
+}
+
+.eval-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.eval-feedback {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+}
+
+.eval-model-answer {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.model-answer-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.eval-model-answer p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    font-style: italic;
+}
+
+/* Score display in session detail page */
+.score-value {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.feedback-block p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.model-answer-block {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.model-answer-block p {
+    color: var(--text-secondary);
+    font-style: italic;
+    line-height: 1.5;
+}

@@ -73,6 +73,20 @@
                             <span class="bubble-label">Your Answer</span>
                             <p th:text="${q.userAnswer}">Answer text</p>
                         </div>
+                        <!-- Score & Feedback (shown if AI evaluation completed) -->
+                        <div th:if="${q.score != null}" class="chat-bubble chat-evaluation">
+                            <div class="eval-header">
+                                <span class="eval-score"
+                                      th:classappend="${q.score >= 8 ? 'score-good' : (q.score >= 5 ? 'score-avg' : 'score-low')}"
+                                      th:text="${q.score + '/' + q.maxScore}">7/10</span>
+                                <span class="eval-label">AI Evaluation</span>
+                            </div>
+                            <p class="eval-feedback" th:text="${q.feedback}">Feedback text</p>
+                            <div th:if="${q.modelAnswer != null}" class="eval-model-answer">
+                                <span class="model-answer-label">Model Answer</span>
+                                <p th:text="${q.modelAnswer}">Model answer text</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

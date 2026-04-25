@@ -107,6 +107,10 @@
                                     <span class="answer-label">Feedback</span>
                                     <p th:text="${question.feedback}">Feedback</p>
                                 </div>
+                                <div th:if="${question.modelAnswer != null}" class="model-answer-block">
+                                    <span class="answer-label">Model Answer</span>
+                                    <p th:text="${question.modelAnswer}">Model answer</p>
+                                </div>
                             </div>
                         </div>
                     </div>
