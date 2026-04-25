@@ -1,6 +1,7 @@
 package com.prakash.interviewpilot.service;
 
 import com.prakash.interviewpilot.dto.CreateSessionRequest;
+import com.prakash.interviewpilot.dto.EvaluationResult;
 import com.prakash.interviewpilot.model.*;
 import com.prakash.interviewpilot.repository.InterviewSessionRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -39,6 +40,9 @@ class InterviewServiceTest {
 
     @Mock
     private QuestionGenerationService questionGenerationService;
+
+    @Mock
+    private AnswerEvaluationService answerEvaluationService;
 
     @InjectMocks
     private InterviewService interviewService;
@@ -251,20 +255,33 @@ class InterviewServiceTest {
     }
 
     @Test
-    @DisplayName("Submit answer - should mark question as answered")
-    void submitAnswer_shouldMarkQuestionAsAnswered() {
+    @DisplayName("Submit answer - should mark question as answered and trigger evaluation")
+    void submitAnswer_shouldMarkQuestionAsAnsweredAndEvaluate() {
         Question q1 = new Question("Q1", 1);
         q1.setId(10L);
         q1.setAnswered(false);
         savedSession.addQuestion(q1);
 
+        EvaluationResult evalResult = new EvaluationResult(8, 10,
+                "Good answer with clear understanding.", "Model answer here.");
+
         when(sessionRepository.findById(1L)).thenReturn(Optional.of(savedSession));
         when(sessionRepository.save(any(InterviewSession.class))).thenReturn(savedSession);
+        when(answerEvaluationService.evaluateAnswer(
+                anyString(), anyString(), any(), any(), any()))
+                .thenReturn(evalResult);
 
         Question result = interviewService.submitAnswer(1L, 10L, "My answer here");
 
         assertTrue(result.isAnswered());
         assertEquals("My answer here", result.getUserAnswer());
+        assertEquals(8, result.getScore());
+        assertEquals(10, result.getMaxScore());
+        assertEquals("Good answer with clear understanding.", result.getFeedback());
+        assertEquals("Model answer here.", result.getModelAnswer());
+
+        verify(answerEvaluationService, times(1)).evaluateAnswer(
+                anyString(), anyString(), any(), any(), any());
     }
 
     @Test
