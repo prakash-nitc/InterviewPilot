@@ -1,6 +1,7 @@
 package com.prakash.interviewpilot.service;
 
 import com.prakash.interviewpilot.dto.CreateSessionRequest;
+import com.prakash.interviewpilot.dto.EvaluationResult;
 import com.prakash.interviewpilot.model.InterviewSession;
 import com.prakash.interviewpilot.model.Question;
 import com.prakash.interviewpilot.model.SessionStatus;
@@ -45,15 +46,18 @@ public class InterviewService {
 
     private final InterviewSessionRepository sessionRepository;
     private final QuestionGenerationService questionGenerationService;
+    private final AnswerEvaluationService answerEvaluationService;
 
     /**
-     * Constructor injection — Spring automatically injects both dependencies.
+     * Constructor injection — Spring automatically injects all dependencies.
      * Since there's only one constructor, @Autowired is optional (Spring 4.3+).
      */
     public InterviewService(InterviewSessionRepository sessionRepository,
-            QuestionGenerationService questionGenerationService) {
+            QuestionGenerationService questionGenerationService,
+            AnswerEvaluationService answerEvaluationService) {
         this.sessionRepository = sessionRepository;
         this.questionGenerationService = questionGenerationService;
+        this.answerEvaluationService = answerEvaluationService;
     }
 
     /**
@@ -218,9 +222,15 @@ public class InterviewService {
 
     /**
      * Submits an answer for a specific question.
-     * Marks the question as answered and stores the user's response.
+     * Marks the question as answered, stores the user's response,
+     * and triggers AI evaluation for scoring and feedback.
      *
-     * @return the answered Question entity
+     * WHY evaluate inline (not async)?
+     * - The user waits for the next question anyway (HTMX swap).
+     * - Groq API is very fast (~0.5-1s), so the delay is minimal.
+     * - Keeps the flow simple — no background jobs or polling needed.
+     *
+     * @return the answered and scored Question entity
      */
     public Question submitAnswer(Long sessionId, Long questionId, String answer) {
         InterviewSession session = getSession(sessionId);
@@ -236,6 +246,26 @@ public class InterviewService {
 
         question.setUserAnswer(answer);
         question.setAnswered(true);
+
+        // Evaluate the answer using AI
+        try {
+            EvaluationResult evaluation = answerEvaluationService.evaluateAnswer(
+                    question.getQuestionText(),
+                    answer,
+                    session.getRole(),
+                    session.getTopic(),
+                    session.getDifficulty());
+
+            question.setScore(evaluation.getScore());
+            question.setMaxScore(evaluation.getMaxScore());
+            question.setFeedback(evaluation.getFeedback());
+            question.setModelAnswer(evaluation.getModelAnswer());
+
+            log.info("Answer evaluated — score: {}/{}", evaluation.getScore(), evaluation.getMaxScore());
+        } catch (Exception e) {
+            log.error("Answer evaluation failed for question {}, continuing without score", questionId, e);
+            // Answer is still saved even if evaluation fails
+        }
 
         sessionRepository.save(session);
         return question;
