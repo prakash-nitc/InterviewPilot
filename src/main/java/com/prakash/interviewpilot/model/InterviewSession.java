@@ -61,6 +61,20 @@ public class InterviewSession {
     private int maxScore;
 
     /**
+     * Extracted text from the user's uploaded resume PDF.
+     * Null if no resume was uploaded.
+     * When present, the AI uses this to generate personalized questions
+     * that reference the candidate's actual experience and skills.
+     *
+     * WHY store the text (not the file)?
+     * - We only need the text for prompt engineering, not the PDF itself.
+     * - Text is small (~3-5KB), PDFs are much larger.
+     * - No need for file storage infrastructure (S3, etc.).
+     */
+    @Column(length = 15000)
+    private String resumeText;
+
+    /**
      * WHY @OneToMany with mappedBy?
      * - One session has many questions.
      * - "mappedBy = session" means the Question entity owns the relationship
@@ -192,6 +206,14 @@ public class InterviewSession {
 
     public void setQuestions(List<Question> questions) {
         this.questions = questions;
+    }
+
+    public String getResumeText() {
+        return resumeText;
+    }
+
+    public void setResumeText(String resumeText) {
+        this.resumeText = resumeText;
     }
 
     public LocalDateTime getCreatedAt() {

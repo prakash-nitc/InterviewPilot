@@ -27,6 +27,7 @@ public class GeminiProperties {
 
     private Api api = new Api();
     private Questions questions = new Questions();
+    private FollowUp followup = new FollowUp();
 
     public Api getApi() {
         return api;
@@ -42,6 +43,14 @@ public class GeminiProperties {
 
     public void setQuestions(Questions questions) {
         this.questions = questions;
+    }
+
+    public FollowUp getFollowup() {
+        return followup;
+    }
+
+    public void setFollowup(FollowUp followup) {
+        this.followup = followup;
     }
 
     /**
@@ -89,6 +98,44 @@ public class GeminiProperties {
 
         public void setCount(int count) {
             this.count = count;
+        }
+    }
+
+    /**
+     * Nested class for gemini.followup.* properties.
+     *
+     * Controls the adaptive follow-up question behavior:
+     * - enabled: master toggle for the feature
+     * - scoreThreshold: trigger follow-up when score <= this value
+     * - maxPerQuestion: max number of follow-ups per original question
+     */
+    public static class FollowUp {
+        private boolean enabled = true;
+        private int scoreThreshold = 6;
+        private int maxPerQuestion = 1;
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
+
+        public int getScoreThreshold() {
+            return scoreThreshold;
+        }
+
+        public void setScoreThreshold(int scoreThreshold) {
+            this.scoreThreshold = scoreThreshold;
+        }
+
+        public int getMaxPerQuestion() {
+            return maxPerQuestion;
+        }
+
+        public void setMaxPerQuestion(int maxPerQuestion) {
+            this.maxPerQuestion = maxPerQuestion;
         }
     }
 }

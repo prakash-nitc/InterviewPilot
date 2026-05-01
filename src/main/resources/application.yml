@@ -37,6 +37,13 @@ server:
     include-stacktrace: always
     include-message: always
 
+# File Upload (for resume PDF)
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      max-request-size: 10MB
+
 # AI Configuration (Groq — OpenAI-compatible)
 gemini:
   api:
@@ -45,3 +52,7 @@ gemini:
     model: llama-3.3-70b-versatile
   questions:
     count: 5
+  followup:
+    enabled: true
+    score-threshold: 6     # trigger follow-up when score <= this value
+    max-per-question: 1    # max follow-ups per original question

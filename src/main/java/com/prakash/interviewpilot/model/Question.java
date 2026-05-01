@@ -1,6 +1,7 @@
 package com.prakash.interviewpilot.model;
 
 import jakarta.persistence.*;
+import com.prakash.interviewpilot.model.QuestionType;
 
 /**
  * Represents a single interview question within a session.
@@ -61,6 +62,22 @@ public class Question {
 
     private boolean answered = false;
 
+    /**
+     * Distinguishes between original questions and AI-generated follow-ups.
+     * ORIGINAL = part of the initial question set generated at session start.
+     * FOLLOW_UP = dynamically generated when the user gives a weak answer.
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private QuestionType questionType = QuestionType.ORIGINAL;
+
+    /**
+     * For FOLLOW_UP questions, this links back to the original question
+     * that triggered the follow-up. Null for ORIGINAL questions.
+     * WHY Long instead of @ManyToOne? — Simpler schema, no circular references.
+     */
+    private Long parentQuestionId;
+
     // --- Constructors ---
 
     public Question() {
@@ -71,6 +88,18 @@ public class Question {
         this.questionText = questionText;
         this.orderIndex = orderIndex;
         this.answered = false;
+        this.questionType = QuestionType.ORIGINAL;
+    }
+
+    /**
+     * Constructor for follow-up questions.
+     * Allows specifying the QuestionType explicitly.
+     */
+    public Question(String questionText, int orderIndex, QuestionType questionType) {
+        this.questionText = questionText;
+        this.orderIndex = orderIndex;
+        this.answered = false;
+        this.questionType = questionType;
     }
 
     // --- Getters and Setters ---
@@ -153,5 +182,21 @@ public class Question {
 
     public void setAnswered(boolean answered) {
         this.answered = answered;
+    }
+
+    public QuestionType getQuestionType() {
+        return questionType;
+    }
+
+    public void setQuestionType(QuestionType questionType) {
+        this.questionType = questionType;
+    }
+
+    public Long getParentQuestionId() {
+        return parentQuestionId;
+    }
+
+    public void setParentQuestionId(Long parentQuestionId) {
+        this.parentQuestionId = parentQuestionId;
     }
 }
