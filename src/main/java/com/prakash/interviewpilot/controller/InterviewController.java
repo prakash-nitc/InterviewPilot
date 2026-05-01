@@ -3,11 +3,15 @@ package com.prakash.interviewpilot.controller;
 import com.prakash.interviewpilot.dto.CreateSessionRequest;
 import com.prakash.interviewpilot.model.*;
 import com.prakash.interviewpilot.service.InterviewService;
+import com.prakash.interviewpilot.service.ResumeParserService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
@@ -27,10 +31,14 @@ import java.util.List;
 @RequestMapping("/interviews")
 public class InterviewController {
 
-    private final InterviewService interviewService;
+    private static final Logger log = LoggerFactory.getLogger(InterviewController.class);
 
-    public InterviewController(InterviewService interviewService) {
+    private final InterviewService interviewService;
+    private final ResumeParserService resumeParserService;
+
+    public InterviewController(InterviewService interviewService, ResumeParserService resumeParserService) {
         this.interviewService = interviewService;
+        this.resumeParserService = resumeParserService;
     }
 
     /**
@@ -48,11 +56,17 @@ public class InterviewController {
     /**
      * Handles the "Create Interview" form submission.
      * Uses POST-Redirect-GET pattern to prevent double submission.
+     *
+     * RESUME-AWARE INTERVIEWS:
+     * If a PDF resume is uploaded, we extract the text and store it
+     * on the session. The AI will use this text to generate personalized
+     * questions when the session is started.
      */
     @PostMapping("/new")
     public String createSession(
             @Valid @ModelAttribute("sessionRequest") CreateSessionRequest request,
             BindingResult bindingResult,
+            @RequestParam(required = false) MultipartFile resume,
             Model model,
             RedirectAttributes redirectAttributes) {
 
@@ -64,7 +78,27 @@ public class InterviewController {
         }
 
         InterviewSession session = interviewService.createSession(request);
-        redirectAttributes.addFlashAttribute("successMessage", "Interview session created successfully!");
+
+        // Handle resume upload (optional)
+        if (resume != null && !resume.isEmpty()) {
+            try {
+                String resumeText = resumeParserService.extractText(resume);
+                session.setResumeText(resumeText);
+                // Save again with resume text
+                interviewService.saveSession(session);
+                log.info("Resume uploaded and parsed for session {} ({} chars)",
+                        session.getId(), resumeText.length());
+                redirectAttributes.addFlashAttribute("successMessage",
+                        "Interview session created with resume! AI will personalize your questions.");
+            } catch (Exception e) {
+                log.error("Failed to parse resume, continuing without it", e);
+                redirectAttributes.addFlashAttribute("successMessage",
+                        "Interview session created! (Resume could not be processed: " + e.getMessage() + ")");
+            }
+        } else {
+            redirectAttributes.addFlashAttribute("successMessage", "Interview session created successfully!");
+        }
+
         return "redirect:/interviews/" + session.getId();
     }
 

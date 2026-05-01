@@ -76,6 +76,13 @@ public class InterviewService {
     }
 
     /**
+     * Saves an existing session (e.g., after adding resume text).
+     */
+    public InterviewSession saveSession(InterviewSession session) {
+        return sessionRepository.save(session);
+    }
+
+    /**
      * Retrieves a session by ID.
      * Throws an exception if not found — we'll handle this gracefully in the
      * controller.
