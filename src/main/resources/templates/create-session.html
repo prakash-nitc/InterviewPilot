@@ -107,6 +107,19 @@
         </div>
     </section>
 
+    <script>
+        function updateFileName(input) {
+            var text = document.getElementById('file-upload-text');
+            if (input.files && input.files[0]) {
+                text.textContent = '📎 ' + input.files[0].name;
+                document.getElementById('file-upload-area').classList.add('file-selected');
+            } else {
+                text.textContent = 'Choose PDF file or drag & drop';
+                document.getElementById('file-upload-area').classList.remove('file-selected');
+            }
+        }
+    </script>
+
 </body>
 
 </html>

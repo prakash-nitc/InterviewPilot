@@ -1333,3 +1333,111 @@ img {
     font-style: italic;
     line-height: 1.5;
 }
+
+/* ========================================
+   Novel Features — Follow-Up & Resume CSS
+   ======================================== */
+
+/* --- Follow-Up Badge (on active question card) --- */
+.follow-up-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: var(--border-radius-full);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #fbbf24;
+    margin-left: var(--spacing-sm);
+    letter-spacing: 0.3px;
+}
+
+/* --- Follow-Up Card Styling (active question) --- */
+.follow-up-card {
+    border-color: rgba(245, 158, 11, 0.3) !important;
+    background: rgba(245, 158, 11, 0.04) !important;
+}
+
+/* --- Follow-Up Tag in Chat History --- */
+.follow-up-tag {
+    font-size: 0.65rem;
+    background: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+    padding: 2px 8px;
+    border-radius: 99px;
+    margin-left: 6px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+/* --- Follow-Up Exchange in Chat History (indented) --- */
+.follow-up-exchange {
+    margin-left: 1.5rem;
+    padding-left: var(--spacing-md);
+    border-left: 2px solid rgba(245, 158, 11, 0.25);
+}
+
+/* --- File Upload Area (Resume) --- */
+.form-hint {
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+    margin-top: -2px;
+}
+
+.file-upload-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-xl) var(--spacing-lg);
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px dashed var(--border-color);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    position: relative;
+}
+
+.file-upload-area:hover {
+    border-color: var(--color-primary);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.file-upload-area.file-selected {
+    border-color: rgba(34, 197, 94, 0.4);
+    background: rgba(34, 197, 94, 0.05);
+}
+
+.file-upload-icon {
+    font-size: 2rem;
+}
+
+.file-upload-text {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.file-upload-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* --- Resume Badge (on session cards and detail page) --- */
+.resume-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    background: rgba(14, 165, 233, 0.15);
+    border: 1px solid rgba(14, 165, 233, 0.3);
+    border-radius: var(--border-radius-full);
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--color-secondary);
+    letter-spacing: 0.3px;
+}

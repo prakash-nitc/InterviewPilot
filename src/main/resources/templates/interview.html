@@ -64,9 +64,12 @@
 
                 <!-- Chat Area: Answered Questions History -->
                 <div class="chat-history" id="chat-history">
-                    <div th:each="q : ${answeredQuestions}" class="chat-exchange">
+                    <div th:each="q : ${answeredQuestions}" class="chat-exchange"
+                         th:classappend="${q.questionType.name() == 'FOLLOW_UP'} ? 'follow-up-exchange' : ''">
                         <div class="chat-bubble chat-question">
-                            <span class="bubble-label">Q<span th:text="${q.orderIndex}">1</span></span>
+                            <span class="bubble-label">Q<span th:text="${q.orderIndex}">1</span>
+                                <span th:if="${q.questionType.name() == 'FOLLOW_UP'}" class="follow-up-tag">🔍 Follow-up</span>
+                            </span>
                             <p th:text="${q.questionText}">Question text</p>
                         </div>
                         <div class="chat-bubble chat-answer">

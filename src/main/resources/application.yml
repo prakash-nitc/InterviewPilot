@@ -30,19 +30,19 @@ spring:
   thymeleaf:
     cache: false
 
+  # File Upload (for resume PDF)
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      max-request-size: 10MB
+
 # Server
 server:
   port: 8080
   error:
     include-stacktrace: always
     include-message: always
-
-# File Upload (for resume PDF)
-  servlet:
-    multipart:
-      enabled: true
-      max-file-size: 5MB
-      max-request-size: 10MB
 
 # AI Configuration (Groq — OpenAI-compatible)
 gemini:
