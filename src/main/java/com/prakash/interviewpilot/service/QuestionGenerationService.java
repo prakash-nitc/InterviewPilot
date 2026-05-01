@@ -48,14 +48,31 @@ public class QuestionGenerationService {
 
     /**
      * Generates interview questions for the given role, topic, and difficulty.
+     * No resume context — standard question generation.
      *
      * @return List of question strings
      */
     public List<String> generateQuestions(InterviewRole role, InterviewTopic topic, Difficulty difficulty) {
+        return generateQuestions(role, topic, difficulty, null);
+    }
+
+    /**
+     * Generates interview questions, optionally personalized using resume text.
+     *
+     * WHY an overloaded method instead of always passing resumeText?
+     * - Backward compatibility: existing code that doesn't have a resume still works.
+     * - Clean API: callers without a resume don't need to pass null explicitly.
+     *
+     * @param resumeText Extracted text from the candidate's resume (nullable)
+     * @return List of question strings
+     */
+    public List<String> generateQuestions(InterviewRole role, InterviewTopic topic,
+                                          Difficulty difficulty, String resumeText) {
         int count = geminiProperties.getQuestions().getCount();
 
-        String prompt = buildPrompt(role, topic, difficulty, count);
-        log.info("Generating {} {} questions for {} - {}", count, difficulty, role, topic);
+        String prompt = buildPrompt(role, topic, difficulty, count, resumeText);
+        log.info("Generating {} {} questions for {} - {}{}", count, difficulty, role, topic,
+                resumeText != null ? " (resume-aware)" : "");
 
         String aiResponse = geminiApiClient.generateContent(prompt);
 
@@ -75,14 +92,15 @@ public class QuestionGenerationService {
      * - Difficulty calibration ("entry-level" vs "staff engineer") guides
      * complexity.
      */
-    String buildPrompt(InterviewRole role, InterviewTopic topic, Difficulty difficulty, int count) {
+    String buildPrompt(InterviewRole role, InterviewTopic topic, Difficulty difficulty,
+                       int count, String resumeText) {
         String difficultyDescription = switch (difficulty) {
             case EASY -> "entry-level, suitable for freshers or junior developers with 0-1 years experience";
             case MEDIUM -> "intermediate, suitable for mid-level developers with 2-4 years experience";
             case HARD -> "advanced, suitable for senior/staff engineers with 5+ years experience";
         };
 
-        return String.format("""
+        StringBuilder prompt = new StringBuilder(String.format("""
                 You are an experienced technical interviewer conducting a mock interview.
 
                 Role: %s
@@ -105,7 +123,25 @@ public class QuestionGenerationService {
                 topic.getDisplayName(),
                 difficulty.getDisplayName(),
                 difficultyDescription,
-                count);
+                count));
+
+        // Append resume context if available (Resume-Aware Interviews feature)
+        if (resumeText != null && !resumeText.isBlank()) {
+            prompt.append(String.format("""
+
+                    CANDIDATE'S RESUME:
+                    %s
+
+                    IMPORTANT ADDITIONAL RULES:
+                    - Tailor at least 2 of the %d questions specifically to the candidate's resume.
+                    - Reference their listed projects, technologies, or work experience directly.
+                    - For example: "You mentioned using Kafka at XYZ Corp — explain how..."
+                    - The remaining questions can be general topic questions.
+                    """,
+                    resumeText, count));
+        }
+
+        return prompt.toString();
     }
 
     /**
