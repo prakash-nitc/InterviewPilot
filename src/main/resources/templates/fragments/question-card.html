@@ -18,9 +18,11 @@
 -->
 
 <!-- Question Card Fragment -->
-<div th:fragment="questionCard" class="question-active-card">
+<div th:fragment="questionCard" class="question-active-card"
+     th:classappend="${question.questionType.name() == 'FOLLOW_UP'} ? 'follow-up-card' : ''">
     <div class="active-question-header">
         <span class="question-number-badge">Question <span th:text="${question.orderIndex}">1</span></span>
+        <span th:if="${question.questionType.name() == 'FOLLOW_UP'}" class="follow-up-badge">🔍 Follow-up</span>
     </div>
     <p class="active-question-text" th:text="${question.questionText}">What is polymorphism?</p>
 

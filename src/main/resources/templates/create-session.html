@@ -37,7 +37,7 @@
                     <p>Choose your role, topic, and difficulty to begin practicing.</p>
                 </div>
 
-                <form th:action="@{/interviews/new}" th:object="${sessionRequest}" method="post" class="session-form">
+                <form th:action="@{/interviews/new}" th:object="${sessionRequest}" method="post" enctype="multipart/form-data" class="session-form">
 
                     <!-- Role Selection -->
                     <div class="form-group">
@@ -78,6 +78,19 @@
                         </div>
                         <div th:if="${#fields.hasErrors('difficulty')}" class="form-error">
                             <span th:errors="*{difficulty}">Error</span>
+                        </div>
+                    </div>
+
+                    <!-- Resume Upload (Optional) -->
+                    <div class="form-group">
+                        <label for="resume">Upload Resume (Optional)</label>
+                        <p class="form-hint">Upload your resume PDF for personalized interview questions tailored to your experience.</p>
+                        <div class="file-upload-area" id="file-upload-area">
+                            <span class="file-upload-icon">📄</span>
+                            <span class="file-upload-text" id="file-upload-text">Choose PDF file or drag & drop</span>
+                            <input type="file" name="resume" id="resume"
+                                   accept=".pdf,application/pdf" class="file-upload-input"
+                                   onchange="updateFileName(this)">
                         </div>
                     </div>
 
