@@ -47,6 +47,7 @@ public class InterviewService {
     private final InterviewSessionRepository sessionRepository;
     private final QuestionGenerationService questionGenerationService;
     private final AnswerEvaluationService answerEvaluationService;
+    private final FollowUpService followUpService;
 
     /**
      * Constructor injection — Spring automatically injects all dependencies.
@@ -54,10 +55,12 @@ public class InterviewService {
      */
     public InterviewService(InterviewSessionRepository sessionRepository,
             QuestionGenerationService questionGenerationService,
-            AnswerEvaluationService answerEvaluationService) {
+            AnswerEvaluationService answerEvaluationService,
+            FollowUpService followUpService) {
         this.sessionRepository = sessionRepository;
         this.questionGenerationService = questionGenerationService;
         this.answerEvaluationService = answerEvaluationService;
+        this.followUpService = followUpService;
     }
 
     /**
@@ -121,12 +124,13 @@ public class InterviewService {
                     "Cannot start session — current status is " + session.getStatus());
         }
 
-        // Generate questions using AI
+        // Generate questions using AI (with resume context if available)
         log.info("Starting session {} — generating AI questions", id);
         List<String> questionTexts = questionGenerationService.generateQuestions(
                 session.getRole(),
                 session.getTopic(),
-                session.getDifficulty());
+                session.getDifficulty(),
+                session.getResumeText());  // null if no resume uploaded
 
         // Create Question entities and attach to session
         for (int i = 0; i < questionTexts.size(); i++) {
@@ -223,7 +227,12 @@ public class InterviewService {
     /**
      * Submits an answer for a specific question.
      * Marks the question as answered, stores the user's response,
-     * and triggers AI evaluation for scoring and feedback.
+     * triggers AI evaluation, and conditionally generates a follow-up.
+     *
+     * NOVEL FEATURE — ADAPTIVE FOLLOW-UPS:
+     * After evaluation, if the score is below a threshold, the system
+     * automatically generates a probing follow-up question and inserts
+     * it into the session. This simulates real interviewer behavior.
      *
      * WHY evaluate inline (not async)?
      * - The user waits for the next question anyway (HTMX swap).
@@ -248,8 +257,9 @@ public class InterviewService {
         question.setAnswered(true);
 
         // Evaluate the answer using AI
+        EvaluationResult evaluation = null;
         try {
-            EvaluationResult evaluation = answerEvaluationService.evaluateAnswer(
+            evaluation = answerEvaluationService.evaluateAnswer(
                     question.getQuestionText(),
                     answer,
                     session.getRole(),
@@ -265,6 +275,27 @@ public class InterviewService {
         } catch (Exception e) {
             log.error("Answer evaluation failed for question {}, continuing without score", questionId, e);
             // Answer is still saved even if evaluation fails
+        }
+
+        // ADAPTIVE FOLLOW-UP: Generate a probing follow-up if the answer was weak
+        if (evaluation != null) {
+            try {
+                Question followUp = followUpService.generateFollowUpIfNeeded(session, question, evaluation);
+                if (followUp != null) {
+                    // Insert the follow-up right after the current question
+                    // Reindex all subsequent questions to make room
+                    int insertAfterIndex = question.getOrderIndex();
+                    session.getQuestions().stream()
+                            .filter(q -> q.getOrderIndex() > insertAfterIndex && !q.getId().equals(question.getId()))
+                            .forEach(q -> q.setOrderIndex(q.getOrderIndex() + 1));
+
+                    followUp.setOrderIndex(insertAfterIndex + 1);
+                    session.addQuestion(followUp);
+                    log.info("Follow-up question inserted at index {}", followUp.getOrderIndex());
+                }
+            } catch (Exception e) {
+                log.error("Follow-up generation failed, continuing without follow-up", e);
+            }
         }
 
         sessionRepository.save(session);
