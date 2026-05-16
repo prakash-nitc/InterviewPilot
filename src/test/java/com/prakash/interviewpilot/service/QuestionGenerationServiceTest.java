@@ -126,7 +126,7 @@ class QuestionGenerationServiceTest {
     void buildPrompt_shouldIncludeCorrectParameters() {
         // Act
         String prompt = questionGenerationService.buildPrompt(
-                InterviewRole.DATA_SCIENTIST, InterviewTopic.PYTHON, Difficulty.HARD, 5);
+                InterviewRole.DATA_SCIENTIST, InterviewTopic.PYTHON, Difficulty.HARD, 5, null);
 
         // Assert
         assertTrue(prompt.contains("Data Scientist"));

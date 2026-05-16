@@ -1,6 +1,7 @@
 package com.prakash.interviewpilot.service;
 
 import com.prakash.interviewpilot.dto.CreateSessionRequest;
+import com.prakash.interviewpilot.dto.DashboardStats;
 import com.prakash.interviewpilot.dto.EvaluationResult;
 import com.prakash.interviewpilot.model.*;
 import com.prakash.interviewpilot.repository.InterviewSessionRepository;
@@ -43,6 +44,9 @@ class InterviewServiceTest {
 
     @Mock
     private AnswerEvaluationService answerEvaluationService;
+
+    @Mock
+    private FollowUpService followUpService;
 
     @InjectMocks
     private InterviewService interviewService;
@@ -129,9 +133,9 @@ class InterviewServiceTest {
         when(sessionRepository.findById(1L)).thenReturn(Optional.of(savedSession));
         when(sessionRepository.save(any(InterviewSession.class))).thenReturn(savedSession);
 
-        // Mock AI generating 3 questions
+        // Mock AI generating 3 questions (4-param version: role, topic, difficulty, resumeText)
         when(questionGenerationService.generateQuestions(
-                any(InterviewRole.class), any(InterviewTopic.class), any(Difficulty.class)))
+                any(InterviewRole.class), any(InterviewTopic.class), any(Difficulty.class), any()))
                 .thenReturn(List.of("Question 1?", "Question 2?", "Question 3?"));
 
         InterviewSession result = interviewService.startSession(1L);
@@ -139,7 +143,7 @@ class InterviewServiceTest {
         assertEquals(SessionStatus.IN_PROGRESS, result.getStatus());
         assertEquals(3, result.getQuestions().size());
         verify(questionGenerationService, times(1)).generateQuestions(
-                any(InterviewRole.class), any(InterviewTopic.class), any(Difficulty.class));
+                any(InterviewRole.class), any(InterviewTopic.class), any(Difficulty.class), any());
     }
 
     @Test
@@ -297,5 +301,46 @@ class InterviewServiceTest {
         assertThrows(
                 IllegalStateException.class,
                 () -> interviewService.submitAnswer(1L, 10L, "Another answer"));
+    }
+
+    @Test
+    @DisplayName("Get dashboard stats - should compute stats from completed sessions")
+    void getDashboardStats_shouldComputeCorrectStats() {
+        InterviewSession completed1 = new InterviewSession(InterviewRole.SDE, InterviewTopic.DSA, Difficulty.EASY);
+        completed1.setStatus(SessionStatus.COMPLETED);
+        completed1.setTotalScore(35);
+        completed1.setMaxScore(50);
+
+        Question q1 = new Question("Q1", 1);
+        q1.setAnswered(true);
+        completed1.addQuestion(q1);
+
+        when(sessionRepository.count()).thenReturn(3L);
+        when(sessionRepository.countByStatus(SessionStatus.COMPLETED)).thenReturn(1L);
+        when(sessionRepository.countByStatus(SessionStatus.IN_PROGRESS)).thenReturn(1L);
+        when(sessionRepository.findByStatus(SessionStatus.COMPLETED)).thenReturn(List.of(completed1));
+
+        DashboardStats stats = interviewService.getDashboardStats();
+
+        assertEquals(3L, stats.getTotalSessions());
+        assertEquals(1L, stats.getCompletedSessions());
+        assertEquals(1L, stats.getInProgressSessions());
+        assertEquals(70.0, stats.getAverageScorePercent());
+        assertEquals("B", stats.getBestGrade());
+        assertEquals(1, stats.getTotalQuestionsAnswered());
+    }
+
+    @Test
+    @DisplayName("Get dashboard stats - should handle no completed sessions")
+    void getDashboardStats_shouldHandleNoCompletedSessions() {
+        when(sessionRepository.count()).thenReturn(0L);
+        when(sessionRepository.countByStatus(any())).thenReturn(0L);
+        when(sessionRepository.findByStatus(SessionStatus.COMPLETED)).thenReturn(List.of());
+
+        DashboardStats stats = interviewService.getDashboardStats();
+
+        assertEquals(0L, stats.getTotalSessions());
+        assertEquals(0.0, stats.getAverageScorePercent());
+        assertEquals("—", stats.getBestGrade());
     }
 }
