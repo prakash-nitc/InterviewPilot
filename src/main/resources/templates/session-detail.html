@@ -54,7 +54,7 @@
                             <span th:text="${interviewSession.topic.displayName}">DSA</span>
                         </h1>
                         <span class="status-badge"
-                            th:classappend="${interviewSession.status.name() == 'NOT_STARTED' ? 'status-pending' : (session.status.name() == 'IN_PROGRESS' ? 'status-active' : 'status-done')}"
+                            th:classappend="${interviewSession.status.name() == 'NOT_STARTED' ? 'status-pending' : (interviewSession.status.name() == 'IN_PROGRESS' ? 'status-active' : 'status-done')}"
                             th:text="${interviewSession.status.displayName}">Status</span>
                     </div>
 
@@ -71,12 +71,51 @@
                         <div class="meta-item" th:if="${interviewSession.status.name() == 'COMPLETED'}">
                             <span class="meta-label">Score</span>
                             <span class="meta-value"
-                                th:text="${interviewSession.totalScore + ' / ' + session.maxScore}">0/0</span>
+                                th:text="${interviewSession.totalScore + ' / ' + interviewSession.maxScore}">0/0</span>
                         </div>
                         <div class="meta-item">
                             <span class="meta-label">Created</span>
                             <span class="meta-value"
-                                th:text="${#temporals.format(session.createdAt, 'MMM dd, yyyy • hh:mm a')}">Date</span>
+                                th:text="${#temporals.format(interviewSession.createdAt, 'MMM dd, yyyy • hh:mm a')}">Date</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Summary (only for completed sessions) -->
+                <div th:if="${interviewSession.status.name() == 'COMPLETED' && interviewSession.maxScore > 0}" class="results-summary">
+                    <h2>Results Summary</h2>
+                    <div class="results-grid">
+                        <div class="result-card result-grade">
+                            <span class="result-grade-letter"
+                                  th:text="${interviewSession.totalScore * 100 / interviewSession.maxScore >= 90 ? 'A+' : (interviewSession.totalScore * 100 / interviewSession.maxScore >= 80 ? 'A' : (interviewSession.totalScore * 100 / interviewSession.maxScore >= 70 ? 'B' : (interviewSession.totalScore * 100 / interviewSession.maxScore >= 60 ? 'C' : (interviewSession.totalScore * 100 / interviewSession.maxScore >= 50 ? 'D' : 'F'))))}">B</span>
+                            <span class="result-label">Overall Grade</span>
+                        </div>
+                        <div class="result-card">
+                            <span class="result-number" th:text="${interviewSession.totalScore + '/' + interviewSession.maxScore}">0/0</span>
+                            <span class="result-label">Total Score</span>
+                        </div>
+                        <div class="result-card">
+                            <span class="result-number" th:text="${interviewSession.totalScore * 100 / interviewSession.maxScore + '%'}">0%</span>
+                            <span class="result-label">Score Percentage</span>
+                        </div>
+                        <div class="result-card">
+                            <span class="result-number" th:text="${interviewSession.questions.size()}">0</span>
+                            <span class="result-label">Questions</span>
+                        </div>
+                    </div>
+
+                    <!-- Per-Question Score Bars -->
+                    <div class="per-question-scores">
+                        <h3>Per-Question Breakdown</h3>
+                        <div th:each="q : ${interviewSession.questions}" class="pq-bar-row">
+                            <span class="pq-label" th:text="'Q' + ${q.orderIndex}">Q1</span>
+                            <div class="score-bar-track pq-track">
+                                <div class="score-bar-fill"
+                                     th:if="${q.score != null && q.maxScore != null && q.maxScore > 0}"
+                                     th:style="'width: ' + ${q.score * 100 / q.maxScore} + '%'"
+                                     th:classappend="${q.score * 100 / q.maxScore >= 80 ? 'fill-good' : (q.score * 100 / q.maxScore >= 50 ? 'fill-avg' : 'fill-low')}"></div>
+                            </div>
+                            <span class="pq-score" th:text="${q.score != null ? (q.score + '/' + q.maxScore) : '—'}">—</span>
                         </div>
                     </div>
                 </div>
