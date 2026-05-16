@@ -1,6 +1,7 @@
 package com.prakash.interviewpilot.service;
 
 import com.prakash.interviewpilot.dto.CreateSessionRequest;
+import com.prakash.interviewpilot.dto.DashboardStats;
 import com.prakash.interviewpilot.dto.EvaluationResult;
 import com.prakash.interviewpilot.model.InterviewSession;
 import com.prakash.interviewpilot.model.Question;
@@ -307,5 +308,53 @@ public class InterviewService {
 
         sessionRepository.save(session);
         return question;
+    }
+
+    /**
+     * Computes aggregated dashboard statistics across all sessions.
+     *
+     * WHY compute in the service instead of raw queries?
+     * - Business logic (grade computation, percentage math) belongs here.
+     * - Keeps the repository simple (just data access).
+     * - Easy to test with mock data.
+     */
+    @Transactional(readOnly = true)
+    public DashboardStats getDashboardStats() {
+        DashboardStats stats = new DashboardStats();
+
+        stats.setTotalSessions(sessionRepository.count());
+        stats.setCompletedSessions(sessionRepository.countByStatus(SessionStatus.COMPLETED));
+        stats.setInProgressSessions(sessionRepository.countByStatus(SessionStatus.IN_PROGRESS));
+
+        // Calculate average score from completed sessions
+        List<InterviewSession> completed = sessionRepository.findByStatus(SessionStatus.COMPLETED);
+
+        if (!completed.isEmpty()) {
+            int totalScore = completed.stream()
+                    .mapToInt(InterviewSession::getTotalScore)
+                    .sum();
+
+            int maxScore = completed.stream()
+                    .filter(s -> s.getMaxScore() > 0)
+                    .mapToInt(InterviewSession::getMaxScore)
+                    .sum();
+
+            double avgPercent = maxScore > 0 ? (totalScore * 100.0 / maxScore) : 0;
+            stats.setAverageScorePercent(Math.round(avgPercent * 10.0) / 10.0);  // 1 decimal
+            stats.setBestGrade(DashboardStats.computeGrade(avgPercent));
+        } else {
+            stats.setAverageScorePercent(0);
+            stats.setBestGrade("—");
+        }
+
+        // Count total questions answered across all sessions
+        int questionsAnswered = completed.stream()
+                .flatMap(s -> s.getQuestions().stream())
+                .filter(Question::isAnswered)
+                .mapToInt(q -> 1)
+                .sum();
+        stats.setTotalQuestionsAnswered(questionsAnswered);
+
+        return stats;
     }
 }

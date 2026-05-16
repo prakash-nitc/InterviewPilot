@@ -41,4 +41,10 @@ public interface InterviewSessionRepository extends JpaRepository<InterviewSessi
      * Used for the session history page.
      */
     List<InterviewSession> findAllByOrderByCreatedAtDesc();
+
+    /**
+     * Count sessions by status (used for dashboard stats).
+     * Spring Data JPA auto-generates: SELECT COUNT(*) FROM interview_sessions WHERE status = ?
+     */
+    long countByStatus(SessionStatus status);
 }
