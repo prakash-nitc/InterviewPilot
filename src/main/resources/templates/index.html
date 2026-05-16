@@ -53,16 +53,20 @@
             </div>
             <div class="hero-stats">
                 <div class="stat">
-                    <span class="stat-number">5+</span>
-                    <span class="stat-label">Interview Roles</span>
+                    <span class="stat-number" th:text="${stats.completedSessions}">0</span>
+                    <span class="stat-label">Sessions Completed</span>
                 </div>
                 <div class="stat">
-                    <span class="stat-number">10+</span>
-                    <span class="stat-label">Topics</span>
+                    <span class="stat-number" th:text="${stats.averageScorePercent + '%'}">0%</span>
+                    <span class="stat-label">Avg Score</span>
                 </div>
                 <div class="stat">
-                    <span class="stat-number">AI</span>
-                    <span class="stat-label">Real-time Feedback</span>
+                    <span class="stat-number" th:text="${stats.bestGrade}">—</span>
+                    <span class="stat-label">Overall Grade</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number" th:text="${stats.totalQuestionsAnswered}">0</span>
+                    <span class="stat-label">Questions Answered</span>
                 </div>
             </div>
         </div>
@@ -79,7 +83,7 @@
                 <div class="feature-card">
                     <div class="feature-icon">🤖</div>
                     <h3>AI Interviewer</h3>
-                    <p>Powered by Google Gemini AI — generates role-specific questions that mirror real interviews.</p>
+                    <p>Powered by Groq AI — generates role-specific questions that mirror real interviews.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">📊</div>
@@ -159,7 +163,7 @@
                 <span class="logo-text">InterviewPilot</span>
             </div>
             <p class="footer-text">
-                Built with Spring Boot, Thymeleaf, HTMX &amp; Google Gemini AI
+                Built with Spring Boot, Thymeleaf, HTMX &amp; Groq AI
             </p>
             <div class="footer-links">
                 <a href="https://github.com/prakash" target="_blank">GitHub</a>

@@ -1,6 +1,9 @@
 package com.prakash.interviewpilot.controller;
 
+import com.prakash.interviewpilot.dto.DashboardStats;
+import com.prakash.interviewpilot.service.InterviewService;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 /**
@@ -14,13 +17,22 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HomeController {
 
+    private final InterviewService interviewService;
+
+    public HomeController(InterviewService interviewService) {
+        this.interviewService = interviewService;
+    }
+
     /**
      * Serves the landing page at the root URL "/".
+     * Passes live dashboard stats for the hero section.
      *
      * @return the name of the Thymeleaf template (maps to templates/index.html)
      */
     @GetMapping("/")
-    public String home() {
+    public String home(Model model) {
+        DashboardStats stats = interviewService.getDashboardStats();
+        model.addAttribute("stats", stats);
         return "index";
     }
 }
