@@ -41,6 +41,26 @@
                 </a>
             </div>
 
+            <!-- Dashboard Stats Banner -->
+            <div th:if="${stats != null && stats.totalSessions > 0}" class="stats-banner">
+                <div class="stats-banner-item">
+                    <span class="stats-banner-number" th:text="${stats.totalSessions}">0</span>
+                    <span class="stats-banner-label">Total</span>
+                </div>
+                <div class="stats-banner-item">
+                    <span class="stats-banner-number" th:text="${stats.completedSessions}">0</span>
+                    <span class="stats-banner-label">Completed</span>
+                </div>
+                <div class="stats-banner-item">
+                    <span class="stats-banner-number" th:text="${stats.averageScorePercent + '%'}">0%</span>
+                    <span class="stats-banner-label">Avg Score</span>
+                </div>
+                <div class="stats-banner-item">
+                    <span class="stats-banner-number" th:text="${stats.bestGrade}">—</span>
+                    <span class="stats-banner-label">Grade</span>
+                </div>
+            </div>
+
             <!-- Success Message -->
             <div th:if="${successMessage}" class="alert alert-success">
                 <span th:text="${successMessage}">Success</span>
@@ -76,6 +96,16 @@
                             <span class="info-label">Score</span>
                             <span class="info-value" th:text="${s.totalScore + '/' + s.maxScore}">0/0</span>
                         </div>
+                    </div>
+                    <!-- Score Progress Bar (only for completed sessions) -->
+                    <div th:if="${s.status.name() == 'COMPLETED' && s.maxScore > 0}" class="session-score-bar">
+                        <div class="score-bar-track">
+                            <div class="score-bar-fill"
+                                 th:style="'width: ' + ${s.totalScore * 100 / s.maxScore} + '%'"
+                                 th:classappend="${(s.totalScore * 100 / s.maxScore) >= 80 ? 'fill-good' : ((s.totalScore * 100 / s.maxScore) >= 50 ? 'fill-avg' : 'fill-low')}"></div>
+                        </div>
+                        <span class="score-bar-percent"
+                              th:text="${s.totalScore * 100 / s.maxScore} + '%'">0%</span>
                     </div>
                     <div class="session-card-footer">
                         <span class="session-date"

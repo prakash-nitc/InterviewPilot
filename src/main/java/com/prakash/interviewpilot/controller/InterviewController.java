@@ -103,11 +103,12 @@ public class InterviewController {
     }
 
     /**
-     * Lists all interview sessions.
+     * Lists all interview sessions with dashboard stats.
      */
     @GetMapping
     public String listSessions(Model model) {
         model.addAttribute("sessions", interviewService.getAllSessions());
+        model.addAttribute("stats", interviewService.getDashboardStats());
         return "sessions";
     }
 
