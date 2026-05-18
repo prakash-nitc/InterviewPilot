@@ -170,6 +170,11 @@
                             Begin Interview →
                         </button>
                     </form>
+                    <a th:if="${interviewSession.status.name() == 'COMPLETED'}"
+                       th:href="@{/interviews/{id}/export(id=${interviewSession.id})}"
+                       class="btn btn-outline">
+                        📄 Download PDF Report
+                    </a>
                     <form th:action="@{/interviews/{id}/delete(id=${interviewSession.id})}" method="post" class="inline-form">
                         <button type="submit" class="btn btn-danger"
                             onclick="return confirm('Are you sure you want to delete this session?')">

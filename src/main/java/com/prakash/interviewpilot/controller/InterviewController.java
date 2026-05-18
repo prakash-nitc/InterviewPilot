@@ -3,6 +3,7 @@ package com.prakash.interviewpilot.controller;
 import com.prakash.interviewpilot.dto.CreateSessionRequest;
 import com.prakash.interviewpilot.model.*;
 import com.prakash.interviewpilot.service.InterviewService;
+import com.prakash.interviewpilot.service.PdfExportService;
 import com.prakash.interviewpilot.service.ResumeParserService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -13,6 +14,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -35,10 +39,14 @@ public class InterviewController {
 
     private final InterviewService interviewService;
     private final ResumeParserService resumeParserService;
+    private final PdfExportService pdfExportService;
 
-    public InterviewController(InterviewService interviewService, ResumeParserService resumeParserService) {
+    public InterviewController(InterviewService interviewService,
+                               ResumeParserService resumeParserService,
+                               PdfExportService pdfExportService) {
         this.interviewService = interviewService;
         this.resumeParserService = resumeParserService;
+        this.pdfExportService = pdfExportService;
     }
 
     /**
@@ -219,5 +227,32 @@ public class InterviewController {
         interviewService.deleteSession(id);
         redirectAttributes.addFlashAttribute("successMessage", "Session deleted successfully!");
         return "redirect:/interviews";
+    }
+
+    /**
+     * Downloads a PDF report for a completed session.
+     *
+     * WHY ResponseEntity instead of returning a view name?
+     * - We're returning binary data (a PDF file), not an HTML page.
+     * - ResponseEntity lets us set Content-Type, Content-Disposition headers.
+     * - The browser treats this as a file download.
+     */
+    @GetMapping("/{id}/export")
+    public ResponseEntity<byte[]> exportPdf(@PathVariable Long id) {
+        try {
+            InterviewSession session = interviewService.getSession(id);
+            byte[] pdf = pdfExportService.generateReport(session);
+
+            String filename = "InterviewPilot_" + session.getRole().name()
+                    + "_" + session.getTopic().name() + "_Report.pdf";
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(pdf);
+        } catch (Exception e) {
+            log.error("Failed to generate PDF for session {}", id, e);
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }
