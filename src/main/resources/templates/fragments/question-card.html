@@ -19,10 +19,16 @@
 
 <!-- Question Card Fragment -->
 <div th:fragment="questionCard" class="question-active-card"
-     th:classappend="${question.questionType.name() == 'FOLLOW_UP'} ? 'follow-up-card' : ''">
+     th:classappend="${question.questionType.name() == 'FOLLOW_UP'} ? 'follow-up-card' : ''"
+     th:data-timer="${interviewSession.difficulty.name() == 'EASY' ? 180 : (interviewSession.difficulty.name() == 'MEDIUM' ? 120 : 90)}">
     <div class="active-question-header">
         <span class="question-number-badge">Question <span th:text="${question.orderIndex}">1</span></span>
         <span th:if="${question.questionType.name() == 'FOLLOW_UP'}" class="follow-up-badge">🔍 Follow-up</span>
+        <!-- Timer Display -->
+        <div class="question-timer" id="question-timer">
+            <span class="timer-icon">⏱</span>
+            <span class="timer-value" id="timer-value">3:00</span>
+        </div>
     </div>
     <p class="active-question-text" th:text="${question.questionText}">What is polymorphism?</p>
 
@@ -36,7 +42,8 @@
     <form th:hx-post="@{/interviews/{id}/answer(id=${interviewSession.id})}"
           hx-target="#question-area"
           hx-swap="innerHTML"
-          class="answer-form">
+          class="answer-form"
+          id="answer-form">
         <input type="hidden" name="questionId" th:value="${question.id}">
         <div class="form-group">
             <label for="answer">Your Answer</label>

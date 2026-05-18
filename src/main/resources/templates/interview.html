@@ -118,12 +118,68 @@
     </section>
 
     <script>
-        // Auto-scroll chat history to bottom after each answer
+        let timerInterval = null;
+
+        function startTimer() {
+            // Clear any existing timer
+            if (timerInterval) clearInterval(timerInterval);
+
+            const card = document.querySelector('.question-active-card');
+            const timerDisplay = document.getElementById('timer-value');
+            const timerContainer = document.getElementById('question-timer');
+
+            if (!card || !timerDisplay || !timerContainer) return;
+
+            let seconds = parseInt(card.dataset.timer) || 120;
+            timerContainer.classList.remove('timer-warning', 'timer-danger');
+
+            function updateDisplay() {
+                const min = Math.floor(seconds / 60);
+                const sec = seconds % 60;
+                timerDisplay.textContent = min + ':' + (sec < 10 ? '0' : '') + sec;
+
+                // Visual warnings
+                if (seconds <= 10) {
+                    timerContainer.classList.add('timer-danger');
+                    timerContainer.classList.remove('timer-warning');
+                } else if (seconds <= 30) {
+                    timerContainer.classList.add('timer-warning');
+                }
+
+                if (seconds <= 0) {
+                    clearInterval(timerInterval);
+                    timerDisplay.textContent = '0:00';
+                    // Auto-submit if there's an answer
+                    const form = document.getElementById('answer-form');
+                    const textarea = document.getElementById('answer');
+                    if (form && textarea) {
+                        if (!textarea.value.trim()) {
+                            textarea.value = '(Time expired - no answer provided)';
+                        }
+                        // Remove required so auto-submit works
+                        textarea.removeAttribute('required');
+                        htmx.trigger(form, 'submit');
+                    }
+                    return;
+                }
+                seconds--;
+            }
+
+            updateDisplay();
+            timerInterval = setInterval(updateDisplay, 1000);
+        }
+
+        // Start timer on page load
+        document.addEventListener('DOMContentLoaded', startTimer);
+
+        // Restart timer after HTMX swaps in a new question
         document.addEventListener('htmx:afterSwap', function() {
             var history = document.getElementById('chat-history');
             if (history) {
                 history.scrollTop = history.scrollHeight;
             }
+            // Small delay to let DOM settle, then start timer for new question
+            setTimeout(startTimer, 100);
         });
     </script>
 
