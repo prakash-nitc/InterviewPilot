@@ -3,6 +3,7 @@ package com.prakash.interviewpilot.service;
 import com.prakash.interviewpilot.dto.CreateSessionRequest;
 import com.prakash.interviewpilot.dto.DashboardStats;
 import com.prakash.interviewpilot.dto.EvaluationResult;
+import com.prakash.interviewpilot.dto.TopicStats;
 import com.prakash.interviewpilot.model.*;
 import com.prakash.interviewpilot.repository.InterviewSessionRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -342,5 +343,49 @@ class InterviewServiceTest {
         assertEquals(0L, stats.getTotalSessions());
         assertEquals(0.0, stats.getAverageScorePercent());
         assertEquals("—", stats.getBestGrade());
+    }
+
+    @Test
+    @DisplayName("Get topic breakdown - should group by topic and compute stats")
+    void getTopicBreakdown_shouldGroupByTopic() {
+        InterviewSession dsa1 = new InterviewSession(InterviewRole.SDE, InterviewTopic.DSA, Difficulty.EASY);
+        dsa1.setStatus(SessionStatus.COMPLETED);
+        dsa1.setTotalScore(40);
+        dsa1.setMaxScore(50);
+
+        InterviewSession dsa2 = new InterviewSession(InterviewRole.SDE, InterviewTopic.DSA, Difficulty.MEDIUM);
+        dsa2.setStatus(SessionStatus.COMPLETED);
+        dsa2.setTotalScore(30);
+        dsa2.setMaxScore(50);
+
+        InterviewSession java1 = new InterviewSession(InterviewRole.SDE, InterviewTopic.JAVA, Difficulty.HARD);
+        java1.setStatus(SessionStatus.COMPLETED);
+        java1.setTotalScore(45);
+        java1.setMaxScore(50);
+
+        when(sessionRepository.findByStatus(SessionStatus.COMPLETED))
+                .thenReturn(List.of(dsa1, dsa2, java1));
+
+        List<TopicStats> breakdown = interviewService.getTopicBreakdown();
+
+        assertEquals(2, breakdown.size());
+        // Java 90% should be first (sorted desc)
+        assertEquals("Java Programming", breakdown.get(0).getTopicName());
+        assertEquals(90.0, breakdown.get(0).getScorePercent());
+        assertEquals("A+", breakdown.get(0).getGrade());
+        // DSA 70% second
+        assertEquals("Data Structures & Algorithms", breakdown.get(1).getTopicName());
+        assertEquals(70.0, breakdown.get(1).getScorePercent());
+        assertEquals("B", breakdown.get(1).getGrade());
+    }
+
+    @Test
+    @DisplayName("Get topic breakdown - should return empty list when no completed sessions")
+    void getTopicBreakdown_shouldReturnEmptyForNoSessions() {
+        when(sessionRepository.findByStatus(SessionStatus.COMPLETED)).thenReturn(List.of());
+
+        List<TopicStats> breakdown = interviewService.getTopicBreakdown();
+
+        assertTrue(breakdown.isEmpty());
     }
 }

@@ -56,7 +56,7 @@ InterviewPilot is a full-stack web application that simulates real technical int
 - [x] **Phase 4:** Real-Time Chat Interface
 - [x] **Phase 5:** AI-Powered Answer Evaluation & Scoring
 - [x] **Phase 6:** Interview History & Analytics
-- [ ] **Phase 7:** Advanced Features
+- [x] **Phase 7:** Advanced Features
 - [ ] **Phase 8:** Deployment & Polish
 
 ## 📂 Project Structure
@@ -100,6 +100,7 @@ Detailed phase-by-phase documentation is available in the [`docs/`](docs/) folde
 - [Phase 4: Chat Interface](docs/PHASE_4_CHAT_INTERFACE.md)
 - [Phase 5: Answer Evaluation](docs/PHASE_5_ANSWER_EVALUATION.md)
 - [Phase 6: Analytics](docs/PHASE_6_ANALYTICS.md)
+- [Phase 7: Advanced Features](docs/PHASE_7_ADVANCED_FEATURES.md)
 
 ## 📄 License
 
