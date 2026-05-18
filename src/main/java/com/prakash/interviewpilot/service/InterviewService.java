@@ -3,6 +3,7 @@ package com.prakash.interviewpilot.service;
 import com.prakash.interviewpilot.dto.CreateSessionRequest;
 import com.prakash.interviewpilot.dto.DashboardStats;
 import com.prakash.interviewpilot.dto.EvaluationResult;
+import com.prakash.interviewpilot.dto.TopicStats;
 import com.prakash.interviewpilot.model.InterviewSession;
 import com.prakash.interviewpilot.model.Question;
 import com.prakash.interviewpilot.model.SessionStatus;
@@ -356,5 +357,41 @@ public class InterviewService {
         stats.setTotalQuestionsAnswered(questionsAnswered);
 
         return stats;
+    }
+
+    /**
+     * Computes per-topic performance breakdown from completed sessions.
+     * Groups sessions by InterviewTopic, aggregates scores, and computes grades.
+     *
+     * WHY Streams with groupingBy instead of per-topic DB queries?
+     * - Single DB call (findByStatus) vs N queries (one per topic).
+     * - Topics with zero sessions are naturally excluded.
+     * - Clean, functional-style code that's easy to test.
+     */
+    @Transactional(readOnly = true)
+    public List<TopicStats> getTopicBreakdown() {
+        List<InterviewSession> completed = sessionRepository.findByStatus(SessionStatus.COMPLETED);
+
+        return completed.stream()
+                .collect(java.util.stream.Collectors.groupingBy(InterviewSession::getTopic))
+                .entrySet().stream()
+                .map(entry -> {
+                    var topic = entry.getKey();
+                    var sessions = entry.getValue();
+
+                    int totalScore = sessions.stream().mapToInt(InterviewSession::getTotalScore).sum();
+                    int maxScore = sessions.stream()
+                            .filter(s -> s.getMaxScore() > 0)
+                            .mapToInt(InterviewSession::getMaxScore).sum();
+
+                    return new TopicStats(
+                            topic.getDisplayName(),
+                            topic.name(),
+                            sessions.size(),
+                            totalScore,
+                            maxScore);
+                })
+                .sorted((a, b) -> Double.compare(b.getScorePercent(), a.getScorePercent()))
+                .collect(java.util.stream.Collectors.toList());
     }
 }

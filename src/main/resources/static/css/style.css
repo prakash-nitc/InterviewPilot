@@ -1669,3 +1669,103 @@ img {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.05); }
 }
+
+/* Topic Performance Breakdown */
+.topic-breakdown {
+    margin-bottom: var(--spacing-lg);
+}
+
+.topic-breakdown h3 {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-md);
+    font-weight: 600;
+}
+
+.topic-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+.topic-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--border-radius-lg);
+    padding: 1rem;
+    transition: border-color 0.2s ease;
+}
+
+.topic-card:hover {
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+.topic-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.topic-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+.topic-grade {
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--border-radius-sm);
+}
+
+.topic-grade.grade-good {
+    background: rgba(74, 222, 128, 0.15);
+    color: #4ade80;
+}
+
+.topic-grade.grade-avg {
+    background: rgba(250, 204, 21, 0.15);
+    color: #facc15;
+}
+
+.topic-grade.grade-low {
+    background: rgba(248, 113, 113, 0.15);
+    color: #f87171;
+}
+
+.topic-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.topic-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+/* Outline Button (for PDF export, etc.) */
+.btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    border: 1px solid rgba(99, 102, 241, 0.4);
+    border-radius: var(--border-radius-md);
+    background: transparent;
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-outline:hover {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: var(--primary);
+}

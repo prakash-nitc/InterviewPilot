@@ -117,6 +117,7 @@ public class InterviewController {
     public String listSessions(Model model) {
         model.addAttribute("sessions", interviewService.getAllSessions());
         model.addAttribute("stats", interviewService.getDashboardStats());
+        model.addAttribute("topicBreakdown", interviewService.getTopicBreakdown());
         return "sessions";
     }
 

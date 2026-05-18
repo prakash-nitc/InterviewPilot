@@ -61,6 +61,32 @@
                 </div>
             </div>
 
+            <!-- Topic Performance Breakdown -->
+            <div th:if="${topicBreakdown != null && !topicBreakdown.isEmpty()}" class="topic-breakdown">
+                <h3>Performance by Topic</h3>
+                <div class="topic-grid">
+                    <div th:each="t : ${topicBreakdown}" class="topic-card">
+                        <div class="topic-card-header">
+                            <span class="topic-name" th:text="${t.topicName}">DSA</span>
+                            <span class="topic-grade"
+                                  th:classappend="${t.scorePercent >= 80 ? 'grade-good' : (t.scorePercent >= 50 ? 'grade-avg' : 'grade-low')}"
+                                  th:text="${t.grade}">B</span>
+                        </div>
+                        <div class="topic-card-body">
+                            <div class="score-bar-track">
+                                <div class="score-bar-fill"
+                                     th:style="'width: ' + ${t.scorePercent} + '%'"
+                                     th:classappend="${t.scorePercent >= 80 ? 'fill-good' : (t.scorePercent >= 50 ? 'fill-avg' : 'fill-low')}"></div>
+                            </div>
+                            <div class="topic-meta">
+                                <span th:text="${t.scorePercent + '%'}">0%</span>
+                                <span th:text="${t.sessionCount + ' session' + (t.sessionCount > 1 ? 's' : '')}">1 session</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Success Message -->
             <div th:if="${successMessage}" class="alert alert-success">
                 <span th:text="${successMessage}">Success</span>
