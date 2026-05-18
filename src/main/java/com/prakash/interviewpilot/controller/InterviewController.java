@@ -111,11 +111,29 @@ public class InterviewController {
     }
 
     /**
-     * Lists all interview sessions with dashboard stats.
+     * Lists all interview sessions with optional status filter.
+     *
+     * WHY @RequestParam(required = false)?
+     * - Filter is optional — /interviews shows all, /interviews?status=COMPLETED shows filtered.
+     * - Clean URL approach without separate endpoints per filter.
      */
     @GetMapping
-    public String listSessions(Model model) {
-        model.addAttribute("sessions", interviewService.getAllSessions());
+    public String listSessions(@RequestParam(required = false) String status, Model model) {
+        List<InterviewSession> sessions;
+        if (status != null && !status.isEmpty()) {
+            try {
+                SessionStatus filterStatus = SessionStatus.valueOf(status);
+                sessions = interviewService.getSessionsByStatus(filterStatus);
+                model.addAttribute("activeFilter", status);
+            } catch (IllegalArgumentException e) {
+                sessions = interviewService.getAllSessions();
+                model.addAttribute("activeFilter", "ALL");
+            }
+        } else {
+            sessions = interviewService.getAllSessions();
+            model.addAttribute("activeFilter", "ALL");
+        }
+        model.addAttribute("sessions", sessions);
         model.addAttribute("stats", interviewService.getDashboardStats());
         model.addAttribute("topicBreakdown", interviewService.getTopicBreakdown());
         return "sessions";

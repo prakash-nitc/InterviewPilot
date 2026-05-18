@@ -41,6 +41,22 @@
                 </a>
             </div>
 
+            <!-- Filter Tabs -->
+            <div class="filter-tabs">
+                <a th:href="@{/interviews}"
+                   th:classappend="${activeFilter == null || activeFilter == 'ALL'} ? 'active' : ''"
+                   class="filter-tab">All</a>
+                <a th:href="@{/interviews(status='IN_PROGRESS')}"
+                   th:classappend="${activeFilter == 'IN_PROGRESS'} ? 'active' : ''"
+                   class="filter-tab">In Progress</a>
+                <a th:href="@{/interviews(status='COMPLETED')}"
+                   th:classappend="${activeFilter == 'COMPLETED'} ? 'active' : ''"
+                   class="filter-tab">Completed</a>
+                <a th:href="@{/interviews(status='NOT_STARTED')}"
+                   th:classappend="${activeFilter == 'NOT_STARTED'} ? 'active' : ''"
+                   class="filter-tab">Not Started</a>
+            </div>
+
             <!-- Dashboard Stats Banner -->
             <div th:if="${stats != null && stats.totalSessions > 0}" class="stats-banner">
                 <div class="stats-banner-item">
