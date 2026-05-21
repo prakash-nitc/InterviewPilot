@@ -1498,7 +1498,7 @@ img {
 .score-bar-track {
     flex: 1;
     height: 6px;
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(99, 102, 241, 0.04);
     border-radius: 3px;
     overflow: hidden;
 }
@@ -1641,7 +1641,7 @@ img {
     align-items: center;
     gap: 0.4rem;
     padding: 0.35rem 0.75rem;
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(99, 102, 241, 0.04);
     border: 1px solid rgba(99, 102, 241, 0.12);
     border-radius: var(--border-radius-full);
     font-size: 0.9rem;
