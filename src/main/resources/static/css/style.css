@@ -530,13 +530,13 @@ img {
 .alert-success {
     background: rgba(34, 197, 94, 0.1);
     border: 1px solid rgba(34, 197, 94, 0.3);
-    color: #4ade80;
+    color: #16a34a;
 }
 
 .alert-danger {
     background: rgba(239, 68, 68, 0.1);
     border: 1px solid rgba(239, 68, 68, 0.3);
-    color: #f87171;
+    color: #dc2626;
 }
 
 /* --- Status Badges --- */
@@ -562,7 +562,7 @@ img {
 
 .status-done {
     background: rgba(34, 197, 94, 0.15);
-    color: #4ade80;
+    color: #16a34a;
 }
 
 /* --- Empty State --- */
@@ -725,7 +725,7 @@ img {
 
 .form-error {
     font-size: var(--font-size-xs);
-    color: #f87171;
+    color: #dc2626;
 }
 
 .difficulty-options {
@@ -880,7 +880,7 @@ img {
 
 .answered-badge {
     font-size: var(--font-size-xs);
-    color: #4ade80;
+    color: #16a34a;
     font-weight: 500;
 }
 
@@ -933,7 +933,7 @@ img {
 
 .btn-danger {
     background: rgba(239, 68, 68, 0.15);
-    color: #f87171;
+    color: #dc2626;
     border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
@@ -1131,7 +1131,7 @@ img {
 }
 
 .chat-answer .bubble-label {
-    color: #4ade80;
+    color: #16a34a;
 }
 
 .chat-bubble p {
@@ -1231,7 +1231,7 @@ img {
 
 .interview-complete-card h2 {
     margin-bottom: var(--spacing-sm);
-    color: #4ade80;
+    color: #16a34a;
 }
 
 .interview-complete-card p {
@@ -1268,18 +1268,18 @@ img {
 }
 
 .eval-score.score-good {
-    background: rgba(74, 222, 128, 0.15);
-    color: #4ade80;
+    background: rgba(22, 163, 74, 0.1);
+    color: #16a34a;
 }
 
 .eval-score.score-avg {
-    background: rgba(250, 204, 21, 0.15);
-    color: #facc15;
+    background: rgba(202, 138, 4, 0.1);
+    color: #ca8a04;
 }
 
 .eval-score.score-low {
-    background: rgba(248, 113, 113, 0.15);
-    color: #f87171;
+    background: rgba(220, 38, 38, 0.1);
+    color: #dc2626;
 }
 
 .eval-label {
@@ -1510,15 +1510,15 @@ img {
 }
 
 .score-bar-fill.fill-good {
-    background: linear-gradient(90deg, #4ade80, #22c55e);
+    background: linear-gradient(90deg, #16a34a, #15803d);
 }
 
 .score-bar-fill.fill-avg {
-    background: linear-gradient(90deg, #facc15, #eab308);
+    background: linear-gradient(90deg, #ca8a04, #a16207);
 }
 
 .score-bar-fill.fill-low {
-    background: linear-gradient(90deg, #f87171, #ef4444);
+    background: linear-gradient(90deg, #dc2626, #b91c1c);
 }
 
 .score-bar-percent {
@@ -1661,16 +1661,16 @@ img {
 }
 
 .question-timer.timer-warning {
-    background: rgba(250, 204, 21, 0.12);
-    border-color: rgba(250, 204, 21, 0.3);
-    color: #facc15;
+    background: rgba(202, 138, 4, 0.1);
+    border-color: rgba(202, 138, 4, 0.3);
+    color: #ca8a04;
     animation: timerPulse 1.5s ease-in-out infinite;
 }
 
 .question-timer.timer-danger {
-    background: rgba(248, 113, 113, 0.15);
-    border-color: rgba(248, 113, 113, 0.4);
-    color: #f87171;
+    background: rgba(220, 38, 38, 0.1);
+    border-color: rgba(220, 38, 38, 0.3);
+    color: #dc2626;
     animation: timerPulse 0.6s ease-in-out infinite;
 }
 
@@ -1730,18 +1730,18 @@ img {
 }
 
 .topic-grade.grade-good {
-    background: rgba(74, 222, 128, 0.15);
-    color: #4ade80;
+    background: rgba(22, 163, 74, 0.1);
+    color: #16a34a;
 }
 
 .topic-grade.grade-avg {
-    background: rgba(250, 204, 21, 0.15);
-    color: #facc15;
+    background: rgba(202, 138, 4, 0.1);
+    color: #ca8a04;
 }
 
 .topic-grade.grade-low {
-    background: rgba(248, 113, 113, 0.15);
-    color: #f87171;
+    background: rgba(220, 38, 38, 0.1);
+    color: #dc2626;
 }
 
 .topic-card-body {
