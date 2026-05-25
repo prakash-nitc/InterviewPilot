@@ -181,13 +181,17 @@ public class InterviewController {
         Question currentQuestion = interviewService.getCurrentQuestion(id);
         List<Question> answeredQuestions = interviewService.getAnsweredQuestions(id);
 
+        int totalQuestions = session.getQuestions().size();
         int currentIndex = answeredQuestions.size() + 1;
+        int progressPercent = totalQuestions > 0 ? (answeredQuestions.size() * 100 / totalQuestions) : 0;
 
         model.addAttribute("interviewSession", session);
         model.addAttribute("currentQuestion", currentQuestion);
         model.addAttribute("question", currentQuestion);  // Fragment uses ${question}
         model.addAttribute("answeredQuestions", answeredQuestions);
         model.addAttribute("currentQuestionIndex", currentIndex);
+        model.addAttribute("totalQuestions", totalQuestions);
+        model.addAttribute("progressPercent", progressPercent);
 
         return "interview";
     }
@@ -215,6 +219,15 @@ public class InterviewController {
         Question nextQuestion = interviewService.getCurrentQuestion(id);
 
         model.addAttribute("interviewSession", session);
+
+        // Compute progress for the fragment's data attributes
+        List<Question> answered = interviewService.getAnsweredQuestions(id);
+        int totalQuestions = session.getQuestions().size();
+        int currentIndex = answered.size() + 1;
+        int progressPercent = totalQuestions > 0 ? (answered.size() * 100 / totalQuestions) : 0;
+        model.addAttribute("currentQuestionIndex", currentIndex);
+        model.addAttribute("totalQuestions", totalQuestions);
+        model.addAttribute("progressPercent", progressPercent);
 
         if (nextQuestion != null) {
             model.addAttribute("question", nextQuestion);
