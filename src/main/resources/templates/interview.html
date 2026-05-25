@@ -49,14 +49,14 @@
                             <span th:text="${interviewSession.questions.size() + ' questions'}">5 questions</span>
                         </p>
                     </div>
-                    <div class="interview-progress">
+                    <div class="interview-progress" id="interview-progress">
                         <span class="progress-text">
                             Question <span id="current-q" th:text="${currentQuestionIndex}">1</span>
-                            of <span th:text="${interviewSession.questions.size()}">5</span>
+                            of <span id="total-q" th:text="${totalQuestions}">5</span>
                         </span>
                         <div class="progress-bar">
                             <div class="progress-fill"
-                                 th:style="'width: ' + ${(currentQuestionIndex - 1) * 100 / interviewSession.questions.size()} + '%'">
+                                 th:style="'width: ' + ${progressPercent} + '%'">
                             </div>
                         </div>
                     </div>
@@ -172,12 +172,29 @@
         // Start timer on page load
         document.addEventListener('DOMContentLoaded', startTimer);
 
-        // Restart timer after HTMX swaps in a new question
+        // Restart timer and update progress after HTMX swaps in a new question
         document.addEventListener('htmx:afterSwap', function() {
             var history = document.getElementById('chat-history');
             if (history) {
                 history.scrollTop = history.scrollHeight;
             }
+
+            // Update progress bar from data attributes on the new question card
+            var card = document.querySelector('.question-active-card');
+            if (card) {
+                var current = card.dataset.current;
+                var total = card.dataset.total;
+                var progress = card.dataset.progress;
+
+                var currentEl = document.getElementById('current-q');
+                var totalEl = document.getElementById('total-q');
+                var fillEl = document.querySelector('.progress-fill');
+
+                if (currentEl && current) currentEl.textContent = current;
+                if (totalEl && total) totalEl.textContent = total;
+                if (fillEl && progress) fillEl.style.width = progress + '%';
+            }
+
             // Small delay to let DOM settle, then start timer for new question
             setTimeout(startTimer, 100);
         });
