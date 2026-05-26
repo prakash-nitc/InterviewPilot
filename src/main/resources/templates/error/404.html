@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found — InterviewPilot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="/" class="logo">
+                <span class="logo-icon">🎯</span>
+                <span class="logo-text">InterviewPilot</span>
+            </a>
+            <div class="nav-links">
+                <a th:href="@{/interviews}">My Sessions</a>
+                <a th:href="@{/interviews/new}" class="btn btn-primary btn-sm">Start Interview</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="page-content">
+        <div class="container">
+            <div class="error-page">
+                <div class="error-icon">🔍</div>
+                <h1 class="error-code">404</h1>
+                <h2 class="error-title">Page Not Found</h2>
+                <p class="error-message">The page you're looking for doesn't exist or has been moved.</p>
+                <div class="error-actions">
+                    <a href="/" class="btn btn-primary btn-lg">Go Home <span class="btn-arrow">→</span></a>
+                    <a th:href="@{/interviews}" class="btn btn-outline btn-lg">My Sessions</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>
