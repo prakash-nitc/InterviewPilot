@@ -57,7 +57,7 @@ InterviewPilot is a full-stack web application that simulates real technical int
 - [x] **Phase 5:** AI-Powered Answer Evaluation & Scoring
 - [x] **Phase 6:** Interview History & Analytics
 - [x] **Phase 7:** Advanced Features
-- [ ] **Phase 8:** Deployment & Polish
+- [x] **Phase 8:** Deployment & Polish
 
 ## 📂 Project Structure
 
@@ -90,6 +90,18 @@ mvnw.cmd spring-boot:run    # Windows
 # Visit http://localhost:8080
 ```
 
+### 🐳 Docker Deployment
+
+```bash
+# Set your API key
+export GROQ_API_KEY="your-groq-key-here"
+
+# Build and run (app + PostgreSQL)
+docker-compose up --build
+
+# Visit http://localhost:8080
+```
+
 ## 📖 Documentation
 
 Detailed phase-by-phase documentation is available in the [`docs/`](docs/) folder:
@@ -101,6 +113,7 @@ Detailed phase-by-phase documentation is available in the [`docs/`](docs/) folde
 - [Phase 5: Answer Evaluation](docs/PHASE_5_ANSWER_EVALUATION.md)
 - [Phase 6: Analytics](docs/PHASE_6_ANALYTICS.md)
 - [Phase 7: Advanced Features](docs/PHASE_7_ADVANCED_FEATURES.md)
+- [Phase 8: Deployment & Polish](docs/PHASE_8_DEPLOYMENT.md)
 
 ## 📄 License
 
