@@ -1,0 +1,44 @@
+# ==============================================
+# InterviewPilot — Docker Compose
+# Runs the app + PostgreSQL database
+# ==============================================
+
+services:
+
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    container_name: interviewpilot-db
+    environment:
+      POSTGRES_DB: interviewpilot
+      POSTGRES_USER: interviewpilot
+      POSTGRES_PASSWORD: interviewpilot
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U interviewpilot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # InterviewPilot Application
+  app:
+    build: .
+    container_name: interviewpilot-app
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: interviewpilot
+      DB_USERNAME: interviewpilot
+      DB_PASSWORD: interviewpilot
+      GROQ_API_KEY: ${GROQ_API_KEY}
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
